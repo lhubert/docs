@@ -1,0 +1,33 @@
+footer_text: "Logisland is open. Logisland and its extensions are available under the <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/hurence/logisland.io' target='_blank'>fork the website</a> and show us what you’ve got."
+
+links:
+  - title: Navigation
+    subfolderitems:
+      - page: Home
+        url: /
+      - page: Guides
+        url: /guides
+      - page: Get Started
+        url: /get-started
+  - title: Contribute
+    subfolderitems:
+      - page: Follow us
+        url: https://twitter.com/LogislandC
+      - page: GitHub
+        url: https://github.com/hurence/logisland
+  - title: Get Help
+    subfolderitems:
+      - page: Chatroom
+        url: https://gitter.im/logisland/logisland
+      - page: Google&nbsp;Groups
+        url: https://groups.google.com/forum/#!forum/logisland-dev
+      - page: FAQ
+        url: /faq
+
+more_links:
+  - title: Logisland is proudly made of
+    subfolderitems:
+      - page: Kafka
+        url: https://kafka.apache.org
+      - page: Spark
+        url: https://spark.apache.org

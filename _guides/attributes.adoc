@@ -1,0 +1,27 @@
+:imagesdir: /guides/images
+
+:project-name: Logisland
+:logisland-version: 1.1.2
+
+:kafka-version: 0.10.2.1
+:zookeeper-version: 3.4.6
+:spark-version: 2.3.3
+
+:logisland-home-url: https://logisland.io
+:logisland-site-getting-started: /get-started
+:logisland-site-extension-authors-guide: /guides/extension-authors-guide
+:logisland-org-url: https://github.com/hurence
+:logisland-base-url: https://github.com/hurence/logisland
+:logisland-clone-url: https://github.com/hurence/logisland.git
+:logisland-archive-url: https://github.com/hurence/logisland/archive/master.zip
+:logisland-tree-url: https://github.com/hurence/logisland/tree/master
+:logisland-issues-url: https://github.com/hurence/logisland/issues
+:logisland-images-url: https://github.com/hurence/logisland-images/tree
+:logisland-chat-url: https://gitter.im/logisland/logisland
+:logisland-mailing-list-subscription-email: logisland-dev+subscribe@googlegroups.com
+:logisland-mailing-list-index: https://groups.google.com/d/forum/logisland-dev
+:quickstarts-base-url: https://github.com/hurence/logisland-quickstarts
+:quickstarts-clone-url: https://github.com/hurence/logisland-quickstarts.git
+:quickstarts-archive-url: https://github.com/hurence/logisland-quickstarts/archive/master.zip
+:quickstarts-blob-url: https://github.com/hurence/logisland-quickstarts/blob/master
+:quickstarts-tree-url: https://github.com/hurence/logisland-quickstarts/tree/master

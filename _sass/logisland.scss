@@ -1,0 +1,358 @@
+// PROJECT styles to overwrite global.scss
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+
+html,
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  background-color: #000c16;
+}
+
+* {
+  font-family: 'Open Sans', Arial, sans-serif;
+  color: $white;
+  line-height: 1rem;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 3.75rem;
+  font-weight: 700;
+  @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+    line-height: 1.5rem;    
+  }
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 400;
+  @media screen and (max-width: 768px) {
+    font-size: 1rem;
+    line-height: 1rem;    
+  }
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.8rem;
+  font-weight: 400;
+  @media screen and (max-width: 768px) {
+    font-size: 1.2rem;
+    line-height: 1.2rem;    
+  }
+}
+
+h4 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  @media screen and (max-width: 768px) {
+    font-size: 1.125rem;
+    line-height: 1.5rem;    
+  }
+}
+
+h5 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+h6 {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+a {
+  line-height: 1.5rem;
+  font-weight: 400;
+  cursor: pointer;
+  text-decoration: underline;
+  color: $link;
+  &:hover, &:active, &:focus {
+    color: $link-hover;
+  }
+}
+
+a.button-cta,
+button,
+input[type="submit"] {
+  color: #09131E;
+  background-color: $cyan;
+  border: 2px solid $cyan;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 2.5;
+  transition: background .2s ease-in 0s;
+  text-decoration: none;
+  &:hover, &:active, &:focus {
+    background-color: $dark-blue;
+    border-color: $cyan;
+    color: $cyan;
+    -webkit-box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+  }
+  @media screen and (max-width: 768px) {
+    font-size: 1rem;
+    line-height: 1rem;
+    padding: .75rem 1rem;
+  }
+}
+
+a.button-cta.secondary {
+  background: transparent;
+  border: 2px solid $cyan;
+  color: $cyan;
+  &:hover, &:active, &:focus {
+    background-color: $cyan;
+    border-color: $cyan;
+    color: #09131E;
+    -webkit-box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 2px rgba(0,0,0,0.75);
+  }
+}
+
+form input[type="submit"] {
+  border: 2px solid $cyan;
+}
+
+table {
+  border-collapse: collapse;
+
+  thead th,
+  tbody th {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    color: $dark-blue;
+    font-weight: 400;
+    text-align: left;
+    padding: 1rem;
+    background-color: $cyan;
+    border: 1px solid $cyan;
+    > div,
+    > div > span {
+      color: $dark-blue;
+    }
+  }
+  
+  tbody td {
+    padding: .25rem 1rem;
+    border: 1px solid $cyan;
+  }
+
+  tbody tr {
+    &:nth-child(even) {
+      background-color: $dark-blue;
+    }
+    td p {
+       margin: 0;
+    }
+  }
+}
+
+mark {
+  background-color: $cyan;
+  color: $dark-blue;
+}
+
+dl dt {
+  font-weight: 700;
+}
+
+code, pre, pre span {
+  color: $yellow;
+  background-color: inherit;
+  padding: 0;
+  a {
+    text-decoration: none;
+    color: inherit;
+    font: inherit;
+  }
+  font-family: 'Roboto Mono', monospace;
+}
+
+.logisland-homepage {
+ padding: 0;
+}
+
+pre {
+ background: #282a36;
+ overflow: inherit;
+ padding: 0;
+}
+
+pre.highlight {
+ border: 1px solid $cyan;
+ padding: 1rem;
+ line-height: 1.2em;
+ overflow-x: auto;
+}
+
+pre > code,
+table code {
+  border: none;
+  background-color: transparent;
+}
+
+.logisland-homepage .tabs pre.highlight {
+ overflow: auto;
+}
+
+.logisland-homepage .tab {
+ overflow: hidden !important;
+}
+
+hr {
+  border-width: 1px;
+  border-color: $cyan;
+}
+
+.full-width-bg {
+  margin: 0 -13rem;
+  padding: 0 13rem;
+  @media screen and (max-width: 1170px) {
+    margin: 0 -6rem;
+    padding: 0 6rem;
+  }
+  @media screen and (max-width: 480px) {
+    margin: 0 -2rem;
+    padding: 0 2rem;
+  }
+}
+
+.component {
+  padding-top: 4rem;
+  padding-bottom: 6rem;
+}
+
+.text-centered {
+  text-align: center;
+}
+
+.text-caps {
+  text-transform: uppercase;
+}
+
+.text-cyan {
+  color: $cyan;
+}
+
+.hide-mobile {
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+ul.dashed {
+  list-style-type: none;
+  > li:before {
+    content: "–";
+    position: absolute;
+    margin-left: -1.1em; 
+    margin-top: 2px;
+    color: $cyan;
+  }
+}
+
+i.conum + b, b.conum {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.hljs {
+  display: inline;
+  overflow: inherit;
+  overflow-x: inherit;
+  overflow-y: hidden;
+  background: inherit;
+  padding: 0;
+  line-height: 1.4em;
+}
+
+.hljs-built_in,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-link {
+  color: $white;
+}
+
+.hljs-keyword {
+  color: $white;
+}
+
+.hljs,
+.hljs-subst {
+  color: $gray-0;
+}
+
+.hljs-title {
+  color: $yellow;
+}
+
+.hljs-string,
+.hljs-meta,
+.hljs-name,
+.hljs-type,
+.hljs-attr,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-tag,
+.hljs-template-variable {
+  color: $orange;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion {
+  color: $gray-1;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-title,
+.hljs-section,
+.hljs-doctag,
+.hljs-type,
+.hljs-name,
+.hljs-strong {
+  // font-weight: bold;
+}
+
+.hljs-literal,
+.hljs-number {
+  color: $yellow;
+}
+
+.hljs-emphasis {
+  // font-style: italic;
+}
+
+li > p,
+li {
+ margin: 0.5em 0;
+}
+
+div.guides img {
+  display: block;
+  margin: auto;
+  padding: 5px;
+}

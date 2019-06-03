@@ -1,0 +1,20 @@
+---
+layout: vision
+permalink: /vision/platforms
+---
+include::../attributes.adoc[]
+
+= The vast distributed scheduling universe
+
+When we talk about scalability, we always end up talking about resources (CPU, GPU, RAM, Disk, Network, ...). When we talk about resources we need to know we will manage them, schedule jobs on nodes and allocate some resources to them. There are many ways to do that, and many tools. {project-mane} is designed to abstract the user of distributed scheduling work. You can you any of the following platforms to run your jobs :
+
+== Yarn
+
+== Mesos
+
+== Standalone
+
+== Kubernetes
+
+
+

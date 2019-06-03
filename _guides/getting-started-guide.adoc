@@ -1,0 +1,255 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+include::./attributes.adoc[]
+= {project-name} - Creating Your First Application
+
+:toc: macro
+:toclevels: 4
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+
+
+Learn how to create a Hello World Logisland app.
+This guide covers:
+
+* Bootstrapping an application
+* Inject some logs
+* Parse them
+* Inspect the resulting events
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* a simple text editor
+* docker & docker-compose installed and running
+
+
+== Architecture
+
+In this guide, we create a straightforward application parsing apache logs with a regex from `logisland_raw` topic and send structured events to `logisland_events`
+
+image::getting-started-architecture.png[alt=Architecture]
+
+This guide also covers the testing kafka access .
+
+== Solution
+
+We recommend that you follow the instructions in the next sections and create the application step by step.
+However, you can go right to the completed example.
+
+Clone the Git repository: `git clone {quickstarts-clone-url}`, or download an {quickstarts-archive-url}[archive].
+
+The solution is located in the `getting-started` directory.
+
+== Setting up Kafka
+Apache Kafka is pitched as a Distributed Streaming Platform. In Kafka lingo, Producers continuously generate data (streams) and Consumers are responsible for processing, storing and analysing it. Kafka Brokers are responsible for ensuring that in a distributed scenario the data can reach from Producers to Consumers without any inconsistency. A set of Kafka brokers and another piece of software called zookeeper constitute a typical Kafka deployment.
+
+Let’s start with a single broker instance. Create a directory called logisland-getting-started and inside it create your docker-compose.yml with the following content:
+
+[source,yml,subs=attributes+]
+----
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka:0.10.2.1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  logisland:
+    image: hurence/logisland:latest
+    volumes:
+      - ./conf:/opt/logisland/conf
+----
+
+Start Zookeeper, Kafka and a zombie Logisland container with the following command `docker-compose up -d`
+
+
+== Boostraping Logisland
+
+Our app is pretty straightforward, it reads some raw apache log lines from a kafka topic, parse these lines as Logisland Records and send these records to another Kafka topic.
+
+=== Configure the streaming app
+
+The easiest way to create a new {project-name} project is to open a text editor and to edit a config file.
+Paste the following content into a `conf/getting-started.yml`.
+
+[source,yml,subs=attributes+]
+----
+version: 1.1.2
+documentation: LogIsland analytics main config file. Put here every engine or component config
+
+engine:
+  component: com.hurence.logisland.engine.spark.KafkaStreamProcessingEngine
+  configuration:
+    spark.app.name: GettingStarted
+    spark.master: local[2]
+    spark.driver.memory: 1G
+    spark.streaming.batchDuration: 1000
+    spark.streaming.kafka.maxRatePerPartition: 3000
+    spark.streaming.timeout: -1
+    spark.ui.port: 4050
+  streamConfigurations:
+
+    - stream: parsing_stream
+      component: com.hurence.logisland.stream.spark.KafkaRecordStreamParallelProcessing
+      configuration:
+        kafka.input.topics: logisland_raw
+        kafka.output.topics: logisland_events
+        kafka.error.topics: logisland_errors
+        kafka.input.topics.serializer: none
+        kafka.output.topics.serializer: com.hurence.logisland.serializer.JsonSerializer
+        kafka.error.topics.serializer: com.hurence.logisland.serializer.JsonSerializer
+        kafka.metadata.broker.list: kafka:9092
+        kafka.zookeeper.quorum: zookeeper:2181
+        kafka.topic.autoCreate: true
+        kafka.topic.default.partitions: 2
+        kafka.topic.default.replicationFactor: 1
+      processorConfigurations:
+
+        - processor: apache_parser
+          component: com.hurence.logisland.processor.SplitText
+          type: parser
+          documentation: a parser that produce events from an apache log REGEX
+          configuration:
+            record.type: apache_log
+            value.regex: (\S+)\s+(\S+)\s+(\S+)\s+\[([\w:\/]+\s[+\-]\d{4})\]\s+"(\S+)\s+(\S+)\s*(\S*)"\s+(\S+)\s+(\S+)
+            value.fields: src_ip,identd,user,record_time,http_method,http_query,http_version,http_status,bytes_out
+
+
+----
+
+An Engine is needed to handle the stream processing. This configuration file defines a stream processing job setup.
+The first section configures the Spark engine (we will use a `KafkaStreamProcessingEngine <../plugins.html#kafkastreamprocessingengine>`_) to run in local mode with 2 cpu cores and 2G of RAM.
+
+Inside this engine you will run a Kafka stream of processing, so we setup input/output topics and Kafka/Zookeeper hosts.
+Here the stream will read all the logs sent in ``logisland_raw`` topic and push the processing output into ``logisland_events`` topic.
+
+We can define some serializers to marshall all records from and to a topic.
+
+=== Launch the application
+
+you can now run the job inside the logisland container
+
+`sudo docker exec -ti logisland-getting-started_logisland_1 ./bin/logisland.sh --conf conf/getting-started.yml`
+
+The last logs should be something like :
+
+[source,sh]
+----
+
+Detected spark version 2.4.0.
+We'll automatically plug in engine jar /opt/logisland-1.1.2/lib/engines/logisland-engine-spark_2_3-1.1.2.jar
+Listening for transport dt_socket at address: 5005
+log4j:WARN No such property [datePattern] in org.apache.log4j.RollingFileAppender.
+log4j:WARN File option not set for appender [rolling].
+log4j:WARN Are you using FileAppender instead of ConsoleAppender?
+2019-05-29 17:01:06 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+log4j:ERROR No output stream or file set for the appender named [rolling].
+2019-05-29 17:01:07 INFO  StreamProcessingRunner:43 - starting StreamProcessingRunner
+
+██╗      ██████╗  ██████╗   ██╗███████╗██╗      █████╗ ███╗   ██╗██████╗
+██║     ██╔═══██╗██╔════╝   ██║██╔════╝██║     ██╔══██╗████╗  ██║██╔══██╗
+██║     ██║   ██║██║  ███╗  ██║███████╗██║     ███████║██╔██╗ ██║██║  ██║
+██║     ██║   ██║██║   ██║  ██║╚════██║██║     ██╔══██║██║╚██╗██║██║  ██║
+███████╗╚██████╔╝╚██████╔╝  ██║███████║███████╗██║  ██║██║ ╚████║██████╔╝
+╚══════╝ ╚═════╝  ╚═════╝   ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝   v1.1.2
+2019-03-19 16:08:47 INFO  StreamProcessingRunner:95 - awaitTermination for engine 1
+2019-03-19 16:08:47 WARN  SparkContext:66 - Using an existing SparkContext; some configuration may not take effect.
+----
+
+
+== Log mining
+
+Now that the plumbing is up and running we'll just send some logs into kafka and see what happens.
+
+=== Inject some Apache logs into Kafka
+
+Now we're going to send some logs to ``logisland_raw`` Kafka topic to simulate a log collection system.
+
+If you don't have your own httpd logs available, you can use some freely available log files from
+NASA-HTTP http://ita.ee.lbl.gov/html/contrib/NASA-HTTP.html web site access:
+
+- Jul 01 to Jul 31, ASCII format, 20.7 MB gzip compressed ftp://ita.ee.lbl.gov/traces/NASA_access_log_Jul95.gz
+- Aug 04 to Aug 31, ASCII format, 21.8 MB gzip compressed ftp://ita.ee.lbl.gov/traces/NASA_access_logAug95.gz
+
+Let's send the first 500 lines of NASA http access over July 1995 to LogIsland with kafka scripts
+ (available in our logisland container) to ``logisland_raw`` Kafka topic.
+In another terminal run those commands
+
+[source,sh]
+----
+sudo docker exec -ti logisland-getting-started_kafka_1 bash
+cd /tmp
+wget ftp://ita.ee.lbl.gov/traces/NASA_access_log_Jul95.gz
+gunzip NASA_access_log_Jul95.gz
+head -n 500 NASA_access_log_Jul95 | ${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list kafka:9092 --topic logisland_raw
+----
+
+
+=== See what we have in return
+
+Logisland will handle the parsing of the log lines and structure them as Records. Those will be sent in another Kafka topic.
+
+`sudo docker exec -ti logisland-getting-started_kafka_1 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic logisland_events --from-beginning`
+
+
+You should see the apache log events such as : 
+
+----
+{
+  "id" : "e80c7088-6676-4b56-9aaf-30cfbe1a4367",
+  "type" : "apache_log",
+  "creationDate" : 804571706000,
+  "fields" : {
+    "src_ip" : "166.79.67.111",
+    "record_id" : "e80c7088-6676-4b56-9aaf-30cfbe1a4367",
+    "http_method" : "GET",
+    "record_value" : "166.79.67.111 - - [01/Jul/1995:00:08:26 -0400] \"GET /images/NASA-logosmall.gif HTTP/1.0\" 200 786",
+    "http_query" : "/images/NASA-logosmall.gif",
+    "bytes_out" : "786",
+    "identd" : "-",
+    "http_version" : "HTTP/1.0",
+    "http_status" : "200",
+    "record_time" : 804571706000,
+    "user" : "-",
+    "record_type" : "apache_log"
+  }
+}
+----
+
+
+== What's next?
+
+This guide covered the creation of an application using Logisland.
+However, there is much more.
+We recommend continuing the journey with the link:building-native-image-guide.html[building a native executable guide], where you learn about the native executable creation and the packaging in a container.
+
+In addition, the link:tooling.html[tooling guide] document explains how to:
+
+* scaffold a project in a single command line
+* enable the _development mode_ (hot reload)
+* import the project in your favorite IDE
+* and more
+

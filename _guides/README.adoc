@@ -1,0 +1,52 @@
+include::./attributes.adoc[]
+= How to Create {project-name} Documentation
+
+This guide describes the asciidoc format and conventions that the {project-name} has
+adopted.
+
+== References
+
+The following links provide background on the general conventions and Asciidoc syntax.
+
+* https://redhat-documentation.github.io/asciidoc-markup-conventions/[AsciiDoc Mark-up Quick Reference for Documentation]
+* http://asciidoctor.org/docs/user-manual/[Asciidoctor User Manual]
+* http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[AsciiDoc Syntax Quick Reference]
+
+== Variables for Use in Documents
+
+The following variables externalize key information that can change over time, and so references
+to such information should be done by using the variable inside of {} curly brackets. The
+complete list of externalized variables for use is given in the following table:
+
+.Variables
+[cols="<m,<m,<2",options="header"]
+|===
+|Property Name|Value|Description
+|\{project-name}|{project-name}|The official name of the project.
+|\{logisland-version}|{logisland-version}|The current version of the project.
+|\{logisland-home-url}|{logisland-home-url}| The location of the project home page.
+|\{logisland-site-getting-started}|{logisland-site-getting-started}| The location of the getting started page.
+|\{logisland-site-live-coding}|{logisland-site-live-coding}| The location of the live coding page.
+|\{logisland-site-extension-authors-guide}|{logisland-site-extension-authors-guide}| The location of the extension authors guide page.
+
+|\{logisland-org-url}|{logisland-org-url}| The location of the project github organization.
+|\{logisland-base-url}|{logisland-base-url}| {project-name} GitHub URL common base prefix.
+|\{logisland-clone-url}|{logisland-clone-url}| {project-name} URL for git clone referenced by the documentation.
+|\{logisland-archive-url}|{logisland-archive-url}| {project-name} URL to master source archive.
+|\{logisland-blob-url}|{logisland-blob-url}| {project-name} URL to master blob source tree; used for referencing source files.
+|\{logisland-tree-url}|{logisland-tree-url}| {project-name} URL to master source tree root; used for referencing directories.
+|\{logisland-issues-url}|{logisland-issues-url}| {project-name} URL to the issues page.
+|\{logisland-images-url}|{logisland-images-url}| {project-name} URL to set of container images delivered for Logisland.
+
+|\{logisland-chat-url}|{logisland-chat-url} | URL of our chat.
+|\{logisland-mailing-list-subscription-email}|{logisland-mailing-list-subscription-email} | Email used to subscribe to our mailing list.
+|\{logisland-mailing-list-index}|{logisland-mailing-list-index} | Mailing list index page.
+
+|\{quickstarts-base-url}|{quickstarts-base-url}| Quickstarts URL common base prefix.
+|\{quickstarts-clone-url}|{quickstarts-clone-url}| Quickstarts URL for git clone referenced by the documentation.
+|\{quickstarts-archive-url}|{quickstarts-archive-url}| Quickstarts URL to master source archive.
+|\{quickstarts-blob-url}|{quickstarts-blob-url}| Quickstarts URL to master blob source tree; used for referencing source files.
+|\{quickstarts-tree-url}|{quickstarts-tree-url}| Quickstarts URL to master source tree root; used for referencing directories.
+
+|\{graalvm-version}|{graalvm-version}| Recommended Graal VM version to use.
+|===

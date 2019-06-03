@@ -1,0 +1,9 @@
+include::./attributes.adoc[]
+= Glossary
+
+This is a collection of preferred term in the documentation and website.
+Please stay within these terms for consistency.
+
+* Docker image:: for the actual `Dockerfile` definition and when the tool chain is involved
+* Container:: when we discuss Logisland running in... containers
+

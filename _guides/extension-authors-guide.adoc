@@ -1,0 +1,21 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+= {project-name} - Writing Your Own Extension
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+:toc:
+
+include::./attributes.adoc[]
+
+Logisland extensions add a new developer focused behavior to the core offering
+
+== Extension philosophy
+
+This section is a work in progress and gathers the philosophy under which extensions should be designed and written.
+
+=== Why an extension framework

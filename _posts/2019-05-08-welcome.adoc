@@ -1,0 +1,18 @@
+---
+layout: post
+title: Welcome to Logisland!
+date: 2019-05-08 14:00:00.000 +0200
+tags: announcement
+author: bailett
+---
+
+= Welcome to Logisland!
+
+Logisland adoption is rising, we want to keep it growing
+
+
+Let's keep rocking!
+Join us on our  https://groups.google.com/d/forum/logisland-dev[Google group] 
+
+Oh by the way, quite a few people ask us whether Logisland was Open Source?
+Of course, all is on https://github.com/hurence/logisland[GitHub] under the ASL 2.0 license.

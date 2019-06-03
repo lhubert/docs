@@ -1,0 +1,13 @@
+---
+layout: vision
+permalink: /vision/configuration-first
+---
+include::../attributes.adoc[]
+
+= {project-name} - Configuration First
+
+From the outset {project-name} has been designed around a configuration first philosophy.  What
+this means in real terms is that {project-name} is useful for every organisation that doesn't want to invest a lot in dev resources:
+
+YAML driven design::
+It costs you a few lines of yaml to deploy a scalable streaming app
