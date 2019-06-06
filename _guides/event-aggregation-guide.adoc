@@ -1,3 +1,9 @@
+---
+layout: guides
+title: Logisland - Event Aggregation
+permalink: /guides/event-aggregation-guide
+---
+
 ////
 This guide is maintained in the main Logisland repository
 and pull requests should be submitted there:
