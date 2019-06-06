@@ -27,6 +27,7 @@ github_fork_url: "https://github.com/hurence/logisland"
 markdown: kramdown
 theme: minima
 plugins:
+  - jekyll-asciidoc
   - jekyll-feed
   - jekyll-mentions
   - jemoji
