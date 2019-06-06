@@ -1,26 +1,26 @@
 dist: trusty
 sudo: false
 git:
-  # use depth 2 just in case two refs get pushed at once (like a tag) 
   depth: 2
 language: ruby
 cache:
   bundler: true
   directories:
-  - .cache
+  - ".cache"
 rvm:
 - 2.5.1
 env:
   global:
   - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+  - secure: LNisOEBOpBNRmTdiQcvceiKfxsNXFnSh3+4cDIN92rW1SjMbv9cG1p5ZKvKk9g0cYrPw/TMoWZM5I8f4P4bI4BUC7X89fmbup5nnLerOZqmxNOaAQYPsWKxh0okMQl7wtJkVAkHde7sp9ERcAC4jssgkMSmVqgUf9JHZhc7YbVAJaWCCSv96B/UTP/ZtXWeRIC2HtxNGeX2Ylm5NNPVjpjW/4FMiaDVB/PbTaclQvM0rffJNSLUTagLSSYZXfdqd3ZFshw+vrkI8bn8lPI9SkbPYmRPBaQz96RBhbKQxMxiI7ueyuUIxjgcyI2X7Th7qf4ZW7A/s2Y0M/i4OIzC+fSljPzZ8nvWBXPMXtMQGoDdfK5w+yNaNsMbaW/KD9vZYLGDY2BMMD+D+WnEJGa1pPowbq/whQZNThvhiGZ/ZHl7H3qOpKeMaLp8y7zFz/XknMR2ZSmu0RXDcQimCBRWF2Ld2Qaawm0hA7cwBXpEeAcBtk+iH/CKFrci1WtIa+PMn6ptMcSVU1uE7xPaK3unK4rqoqAf9RUTv5u5sgl5jwRDNwlnptLC9ThczlREIcwEnaSMEUzG8IjORSq1rjdpg7L98eQF1MEiNYCeQ4RtipEROFnAc3/2zisXUkOTR3dP9pxaPZgEWy3Oy74Dg6R1VrDLO6hAhgvakbRtgwcc8Gd8=
 branches:
   only:
-    - develop
+  - develop
 script: bundle exec jekyll build
 deploy:
   provider: pages
   skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  github-token: "$GITHUB_TOKEN"
   keep-history: true
   local-dir: _site
   target-branch: master
