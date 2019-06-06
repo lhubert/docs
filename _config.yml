@@ -29,6 +29,7 @@ theme: minima
 plugins:
   - jekyll-asciidoc
   - jekyll-feed
+  - jekyll-seo-tag
 
 
 sass:
