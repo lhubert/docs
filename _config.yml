@@ -29,7 +29,6 @@ theme: minima
 plugins:
   - jekyll-asciidoc
   - jekyll-feed
-  - jekyll-sitemap
 
 
 sass:
