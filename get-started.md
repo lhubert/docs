@@ -8,8 +8,8 @@ permalink: /get-started/
 ## Table of Contents
 ### Getting Started
 
- - [Creating Your First Application]({{site.baseurl}}/guides/getting-started-guide)
- - [Using our Tooling]({{site.baseurl}}/guides/tooling)
+ - [First Log Mining Application]({{site.baseurl}}/guides/getting-started-guide)
+
 
 ### Guides
 
@@ -18,7 +18,7 @@ permalink: /get-started/
 </div>
 <div class="grid__item width-8-12 width-12-12-m gs-content">
 <div class="guide-item" markdown="1">
-## Create Your First Application
+## First Log Mining Application
 
 This guide covers:
 * Bootstrapping an application

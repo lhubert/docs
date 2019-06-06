@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Logisland - Architecture</title>
+  <title>Architecture</title>
   <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
   <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
   <meta charset="utf-8">
@@ -63,7 +63,7 @@
 
     <div class="grid-wrapper gs-header">
   <div class="grid__item width-12-12">
-    <h1 class="text-caps">Logisland - Architecture</h1>
+    <h1 class="text-caps">Architecture</h1>
   </div>
 </div>
 <div id="preamble">
@@ -73,8 +73,9 @@
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="core-philosophy-event-sourcing">Core Philosophy : Event sourcing</h3>
+<div class="sect1">
+<h2 id="core-philosophy-event-sourcing">Core Philosophy : Event sourcing</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Most of the systems in this data world can be observables through their <strong>events</strong>.
 You just have to look at the <a href="https://msdn.microsoft.com/en-us/library/dn589792.aspx">event sourcing pattern</a> to get an idea of how we could define any system state as a sequence of temporal events. The core nature of events can be very different from one organisation to another but consists mainly in <code>system/application logs</code>, <code>sensor data</code>, <code>user click streams</code>, etc. Large and complex systems, made of number of heterogeneous components are not easy to monitor, especially when have to deal with distributed computing. Most of the time of IT resources is spent in maintenance tasks, so there&#8217;s a real need for tools to help achieving them.</p>
@@ -103,16 +104,20 @@ Logisland will help us to handle replayable events from any kind of source due t
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="data-driven-architecture">Data driven architecture</h3>
+</div>
+<div class="sect1">
+<h2 id="data-driven-architecture">Data driven architecture</h2>
+<div class="sectionbody">
 <div class="imageblock">
 <div class="content">
 <img src="/guides/images/data-driven-computing.png" alt="Data Driven">
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="technical-design">Technical design</h3>
+</div>
+<div class="sect1">
+<h2 id="technical-design">Technical design</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Logisland is an event processing framework based on Kafka and Spark. The main goal of this Open Source platform is to
 abstract the level of complexity of complex event processing at scale. Of course many people start with an ELK stack,
@@ -126,6 +131,7 @@ Logisland glue those technologies to simplify log complex event processing at sc
 <div class="imageblock">
 <div class="content">
 <img src="/guides/images/logisland-workflow.png" alt="logisland workflow">
+</div>
 </div>
 </div>
 </div>

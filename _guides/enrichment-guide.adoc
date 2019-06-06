@@ -1,0 +1,257 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+include::./attributes.adoc[]
+= Logs Enrichment
+
+:toc: macro
+:toclevels: 4
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+
+Learn how to add meta information from external source and using a cache
+This guide covers:
+
+* LRU cache definition
+* User Agent parsing
+* FQDN meta data retrieval
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* an IDE
+* JDK 1.8+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven 3.5.3+
+* The completed greeter application from the link:getting-started-guide[Getting Started Guide]
+
+
+== Solution
+
+We recommend that you follow the instructions in the next sections and create the application step by step.
+However, you can go right to the completed example.
+
+* Clone the Git repository: `git clone {quickstarts-clone-url}`, or download an {quickstarts-archive-url}[archive].
+* The solution is located in the `enrichment` directory.
+
+This guide assumes you already have the completed application from the `getting-started` directory.
+
+== Apache logs Enrichment
+
+In the following tutorial we'll drive you through the process of enriching Apache logs with LogIsland platform.
+
+One of the first steps when treating web access logs is to extract information from the User-Agent header string, in order to be able to classify traffic.
+The User-Agent string is part of the access logs from the web server (this is the last field in the example below).
+
+Another step is to find the FQDN (full qualified domain name) from an ip address.
+
+[source]
+----
+127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 
+    "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"
+----
+
+That string is packed with information from the visitor, when you know how to interpret it. However, the User-Agent string is not based on any standard, and it is not trivial to extract meaningful information from it.
+LogIsland provides a processor, based on the http://github.com/nielsbasjes/yauaa[YAUAA library], that simplifies that treatement.
+
+LogIsland provides a processor, based on https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html[InetAdress class from JDK 8], that use reverse Dns to determine FQDN from an IP.
+
+[Tip]
+This class find FQDN from ip using IN-ADDR.ARPA (or IP6.ARPA for ipv6). If it finds a domain name, it verifies that it matches back the same address ip in order to prevent against https://en.wikipedia.org/wiki/IP_address_spoofing[IP spoofing attack].
+ If you want to return the ip anyway, you should implement a new plugin using another library as dnsjava for example or open an issue for asking this feature.
+
+
+== Install required components
+
+For this tutorial please make sure to already have installed required modules. If not you can just do it through the components.sh command line:
+
+[source,shell]
+----
+bin/components.sh -i com.hurence.logisland:logisland-processor-elasticsearch:1.1.2
+bin/components.sh -i com.hurence.logisland:logisland-service-elasticsearch_2_4_0-client:1.1.2
+bin/components.sh -i com.hurence.logisland:logisland-processor-enrichment:1.1.2
+bin/components.sh -i com.hurence.logisland:logisland-processor-useragent:1.1.2
+----
+
+
+
+
+== Analyze User-Agent
+
+You can either apply the modifications from this section to the file *conf/index-apache-logs.yml* ot directly use the file *conf/enrich-apache-logs.yml* that already includes them.
+
+The stream needs to be modified to ::
+
+* modify the regex to add the referer and the User-Agent strings for the SplitText processor
+* modify the Avro schema to include the new fields returned by the UserAgentProcessor
+* include the processing of the User-Agent string after the parsing of the logs
+* include the processor IpToFqdn after the ParserUserAgent
+* include a cache service to use with IpToFqdn processor
+
+The example below shows how to include all of the fields supported by the processor.
+
+[tip]
+It is possible to remove unwanted fields from both the processor configuration and the Avro schema
+
+
+[source,yaml]
+----
+controllerServiceConfigurations:
+# cache service implementation using LinkedHashMap (Least Recent Used)
+- controllerService: lru_cache_service
+    component: com.hurence.logisland.service.cache.LRUKeyValueCacheService
+    configuration:
+        cache.size: 16384
+
+streamConfigurations:
+
+- stream: parsing_stream
+    component: com.hurence.logisland.stream.spark.KafkaRecordStreamParallelProcessing
+    ...
+
+    processorConfigurations:
+
+    # parse apache logs
+    - processor: apache_parser
+        component: com.hurence.logisland.processor.SplitText
+        ...
+
+    # decompose the user_agent field into meaningful attributes
+    - processor: user_agent_analyzer
+        component: com.hurence.logisland.processor.useragent.ParseUserAgent
+        configuration:
+            useragent.field: http_user_agent
+            fields: > 
+                DeviceClass,DeviceName,DeviceBrand,DeviceCpu,DeviceFirmwareVersion,
+                DeviceVersion,OperatingSystemClass,OperatingSystemName,
+                OperatingSystemVersion,OperatingSystemNameVersion,
+                OperatingSystemVersionBuild,LayoutEngineClass,LayoutEngineName,
+                LayoutEngineVersion,LayoutEngineVersionMajor,LayoutEngineNameVersion,
+                LayoutEngineNameVersionMajor,LayoutEngineBuild,AgentClass,AgentName,
+                AgentVersion,AgentVersionMajor,AgentNameVersion,AgentNameVersionMajor,
+                AgentBuild,AgentLanguage,AgentLanguageCode,AgentInformationEmail,
+                AgentInformationUrl,AgentSecurity,AgentUuid,FacebookCarrier,
+                FacebookDeviceClass,FacebookDeviceName,FacebookDeviceVersion,
+                FacebookFBOP,FacebookFBSS,FacebookOperatingSystemName,
+                FacebookOperatingSystemVersion,Anonymized,HackerAttackVector,HackerToolkit,
+                KoboAffiliate,KoboPlatformId,IECompatibilityVersion,
+                IECompatibilityVersionMajor,IECompatibilityNameVersion,
+                IECompatibilityNameVersionMajor,GSAInstallationID,WebviewAppName,
+                WebviewAppNameVersionMajor,WebviewAppVersion,WebviewAppVersionMajor
+
+    # find full qualified domain name correponding to an ip using reverse Dns.
+    - processor: ipToFqdn
+        component: com.hurence.logisland.processor.enrichment.IpToFqdn
+        configuration:
+            ip.address.field: src_ip
+            fqdn.field: src_ip
+            override.fqdn.field: true
+            cache.service: lru_cache_service
+----
+
+
+Once the configuration file is updated, LogIsland must be restarted with that new configuration file.
+
+    bin/logisland.sh --conf <new_configuration_file>
+
+== Inspect the logs
+
+You've completed the enrichment of your logs using the User-Agent processor.
+The logs are now loaded into elasticSearch, in the following form :
+
+    curl -XGET http://localhost:9200/logisland.*/_search?pretty
+
+
+[source,json]
+----
+{
+
+    "_index": "logisland.2017.03.21",
+    "_type": "apache_log",
+    "_id": "4ca6a8b5-1a60-421e-9ae9-6c30330e497e",
+    "_score": 1.0,
+    "_source": {
+        "@timestamp": "2015-05-17T10:05:43Z",
+        "agentbuild": "Unknown",
+        "agentclass": "Browser",
+        "agentinformationemail": "Unknown",
+        "agentinformationurl": "Unknown",
+        "agentlanguage": "Unknown",
+        "agentlanguagecode": "Unknown",
+        "agentname": "Chrome",
+        "agentnameversion": "Chrome 32.0.1700.77",
+        "agentnameversionmajor": "Chrome 32",
+        "agentsecurity": "Unknown",
+        "agentuuid": "Unknown",
+        "agentversion": "32.0.1700.77",
+        "agentversionmajor": "32",
+        "anonymized": "Unknown",
+        "devicebrand": "Apple",
+        "deviceclass": "Desktop",
+        "devicecpu": "Intel",
+        "devicefirmwareversion": "Unknown",
+        "devicename": "Apple Macintosh",
+        "deviceversion": "Unknown",
+        "facebookcarrier": "Unknown",
+        "facebookdeviceclass": "Unknown",
+        "facebookdevicename": "Unknown",
+        "facebookdeviceversion": "Unknown",
+        "facebookfbop": "Unknown",
+        "facebookfbss": "Unknown",
+        "facebookoperatingsystemname": "Unknown",
+        "facebookoperatingsystemversion": "Unknown",
+        "gsainstallationid": "Unknown",
+        "hackerattackvector": "Unknown",
+        "hackertoolkit": "Unknown",
+        "iecompatibilitynameversion": "Unknown",
+        "iecompatibilitynameversionmajor": "Unknown",
+        "iecompatibilityversion": "Unknown",
+        "iecompatibilityversionmajor": "Unknown",
+        "koboaffiliate": "Unknown",
+        "koboplatformid": "Unknown",
+        "layoutenginebuild": "Unknown",
+        "layoutengineclass": "Browser",
+        "layoutenginename": "Blink",
+        "layoutenginenameversion": "Blink 32.0",
+        "layoutenginenameversionmajor": "Blink 32",
+        "layoutengineversion": "32.0",
+        "layoutengineversionmajor": "32",
+        "operatingsystemclass": "Desktop",
+        "operatingsystemname": "Mac OS X",
+        "operatingsystemnameversion": "Mac OS X 10.9.1",
+        "operatingsystemversion": "10.9.1",
+        "operatingsystemversionbuild": "Unknown",
+        "webviewappname": "Unknown",
+        "webviewappnameversionmajor": "Unknown",
+        "webviewappversion": "Unknown",
+        "webviewappversionmajor": "Unknown",
+        "bytes_out": 171717,
+        "http_method": "GET",
+        "http_query": "/presentations/logstash-monitorama-2013/images/kibana-dashboard3.png",
+        "http_referer": "http://semicomplete.com/presentations/logstash-monitorama-2013/",
+        "http_status": "200",
+        "http_user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36",
+        "http_version": "HTTP/1.1",
+        "identd": "-",
+        "record_id": "4ca6a8b5-1a60-421e-9ae9-6c30330e497e",
+        "record_raw_value": "83.149.9.216 - - [17/May/2015:10:05:43 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-dashboard3.png HTTP/1.1\" 200 171717 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
+        "record_time": 1431857143000,
+        "record_type": "apache_log",
+        "src_ip": "83.149.9.216",
+        "user": "-"
+    }
+}
+----
+
+
+
+

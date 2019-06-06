@@ -13,8 +13,10 @@ permalink: /guides/
 - [Event Aggregation]({{site.baseurl}}/guides/event-aggregation-guide)
 - [Query Matching]({{site.baseurl}}/guides/query-matching-guide)
 - [Using Expression language]({{site.baseurl}}/guides/el-guide)
+- [Using Cache & Enrichers]({{site.baseurl}}/guides/enrichment-guide)
+- [Threshold Alerting]({{site.baseurl}}/guides/threshold-alerting-guide)
 
-### Core
+### Operation
 
 - [Kafka Operations]({{site.baseurl}}/guides/kafka-operations-guide)
 - [Kafka Best Practices]({{site.baseurl}}/guides/kafka-best-practices-guide)
@@ -39,11 +41,11 @@ permalink: /guides/
 
 
 - [Using Connectors]({{site.baseurl}}/guides/datastore-connectors-guide)
-- [Using Kafka]({{site.baseurl}}/guides/datastore-kafka-guide)
+- [Using Elasticsearch]({{site.baseurl}}/guides/datastore-elasticsearch-guide)
 - [Using SolR]({{site.baseurl}}/guides/datastore-solr-guide)
 - [Using Redis]({{site.baseurl}}/guides/datastore-redis-guide)
-- [Using HBase]({{site.baseurl}}/guides/datastore-hbase-guide)
-- [Using Elasticsearch]({{site.baseurl}}/guides/datastore-es-guide)
+- [Using MongoDB]({{site.baseurl}}/guides/datastore-mongo-guide)
+
 
 ### Security
 

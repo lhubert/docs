@@ -1,0 +1,236 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+include::./attributes.adoc[]
+= Datastores - SolR
+
+:toc: right
+:toclevels: 4
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+
+
+
+Learn how to send {project-name} `Records` into SolR through de the Datastore API
+
+This guide covers:
+
+* datastore API
+* SolR setup
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* an IDE
+* JDK 1.8+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven 3.5.3+
+* The completed greeter application from the link:getting-started-guide[Getting Started Guide]
+
+
+== Setup the environment
+
+For this guide we need a {project-name} stack (Zookeeper, Kafka, Logisland) and an SolR as a complete Docker compose config.
+
+[TIP]
+Please note that you should not launch silmutaneously several docker-compose because we are exposing local port in them. So running several at the same time would be conflicting. So be sure to have killed all your previously launched ({project-name}) containers.
+
+Edit a file named `docker-compose-datastore-solr.yml` with the following content : 
+
+[source,dockerfile]
+----
+version: '3'
+services:
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: hurence/zookeeper
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
+    networks:
+      - logisland
+
+  # A single Kafka broker
+  kafka:
+    image: hurence/kafka:0.10.2.2-scala-2.11
+    hostname: kafka
+    ports:
+      - '9092:9092'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/
+    environment:
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_JMX_PORT: 7071
+    networks:
+      - logisland
+
+  # Logisland container : does nothing but launching
+  logisland:
+    image: hurence/logisland:1.1.2
+    command: tail -f bin/logisland.sh
+    ports:
+      - '4050:4050'
+      - '8082:8082'
+      - '9999:9999'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/ # Just so that kafka scripts are available inside container
+    environment:
+      KAFKA_HOME: /opt/kafka_2.11-0.10.2.2
+      KAFKA_BROKERS: kafka:9092
+      ZK_QUORUM: zookeeper:2181
+      SOLR_CONNECTION: http://solr:8983/solr
+    networks:
+      - logisland
+
+  # A single SolR node
+  solr:
+    hostname: solr
+    image: 'solr:6.6.2'
+    ports:
+      - '8983:8983'
+    networks:
+      - logisland
+
+volumes:
+  kafka-home:
+
+networks:
+  logisland:
+----
+
+Launch your docker containers with this command :
+
+    sudo docker-compose -f docker-compose-datastore-solr.yml up -d
+
+Make sure all containers are running and that there is no error.
+
+    sudo docker-compose ps
+
+Those containers should now be up and running as shown below
+
+[source,shell]
+----
+CONTAINER ID        IMAGE                                                 COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+0d9e02b22c38        docker.elastic.co/kibana/kibana:5.4.0                 "/bin/sh -c /usr/loc…"   13 seconds ago      Up 8 seconds        0.0.0.0:5601->5601/tcp                                                   conf_kibana_1
+ab15f4b5198c        docker.elastic.co/SolR/SolR:6.6.2   "/bin/bash bin/es-do…"   13 seconds ago      Up 7 seconds        0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp                           conf_SolR_1
+a697e45d2d1a        hurence/logisland:1.1.0                               "tail -f bin/logisla…"   13 seconds ago      Up 9 seconds        0.0.0.0:4050->4050/tcp, 0.0.0.0:8082->8082/tcp, 0.0.0.0:9999->9999/tcp   conf_logisland_1
+db80cdf23b45        hurence/zookeeper                                     "/bin/sh -c '/usr/sb…"   13 seconds ago      Up 10 seconds       2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp, 7072/tcp                     conf_zookeeper_1
+7aa7a87dd16b        hurence/kafka:0.10.2.2-scala-2.11                     "start-kafka.sh"         13 seconds ago      Up 5 seconds        0.0.0.0:9092->9092/tcp                                                   conf_kafka_1
+----
+
+
+== SolR Collection setup
+
+We will now set up our solr database. First create the 'solr-apache-logs' collection
+
+    sudo docker exec -it --user=solr conf_solr_1 bin/solr create_core -c solr-apache-logs
+
+The core/collection should have those fields (corresponding to apache logs parsed fields) : ``src_ip``, ``identd``, ``user``, ``bytes_out``,
+    ``http_method``, ``http_version``, ``http_query``, ``http_status``
+
+Otherwise for simplicity you can add a dynamic field called '*' and of type string for this collection with the web ui :
+http://localhost:8983/solr[http://localhost:8983/solr]
+
+Select the solr-apache-logs collection, go to schema and add your fields.
+
+== Logisland job setup
+
+Now that we have a fully functionnal infrastructure, we can go to the stream processing job definition.
+
+The beginning of the job remains the same as the link:getting-started-guide[Getting Started] one : 
+
+* an `Engine` definition
+* a `RecordStream` to handle the processing pipeline
+* a sequence of `Processor` to parse the logs
+
+What is new here is the 
+
+* `controllerService` definition to instanciate an SolR Datastore
+* a `BulkPut` processor to send `Records` to the DataStore
+
+The `controllerServiceConfigurations` part is here to define all services that be shared by processors within the whole job, here an SolR service that will be used later in the ``BulkAddSolR`` processor.
+
+[source,yaml]
+----
+engine:
+  component: com.hurence.logisland.engine.spark.KafkaStreamProcessingEngine
+  configuration:
+    spark.app.name: IndexApacheLogsDemo
+    spark.master: local[2]
+  controllerServiceConfigurations:
+
+    - controllerService: datastore_service
+      component: com.hurence.logisland.service.solr.Solr_6_6_2_ClientService
+      configuration:
+        solr.cloud: false
+        solr.connection.string: ${SOLR_CONNECTION}
+        solr.collection: solr-apache-logs
+        solr.concurrent.requests: 4
+        flush.interval: 2000
+        batch.size: 1000
+----
+
+As you can see it uses environment variable so make sure to set them. (if you use the docker-compose file of this tutorial it is already done for you).
+You should notice that `solr_service` is the unique name given to the ControllerService which can referenced by any Processor config further in the config file.
+
+Inside this engine you will run a Kafka stream of processing, so we setup input/output topics and Kafka/Zookeeper hosts.
+Here the stream will read all the logs sent in `logisland_raw` topic and push the processing output into `logisland_events` topic.
+
+[source,yaml]
+----
+- processor: apache_parser
+    component: com.hurence.logisland.processor.SplitText
+        ...
+
+# all the parsed records are added to solr by bulk
+- processor: solr_publisher
+  component: com.hurence.logisland.processor.datastore.BulkPut
+  configuration:
+    datastore.client.service: datastore_service
+----
+
+
+
+
+you can now run the job inside the logisland container
+
+    sudo docker exec -ti conf_logisland_1 ./bin/logisland.sh --conf ./conf/index-apache-logs-solr.yml
+
+
+
+== Inspect the logs
+
+With Solr, you can directly use the solr web ui.
+
+Open up your browser and go to http://localhost:8983/solr[http://localhost:8983/solr] and you should be able to view your apache logs.
+
+In non cloud mode, use the core selector, to select the core ```solr-apache-logs``` :
+
+image::solr-dashboard.png[]
+
+Then, go to query and by clicking to Execute Query, you will see some data from your Apache logs :
+
+image::solr-query.png[]
+
+== Stop the job
+
+You can Ctr+c the console where you launched logisland job.
+Then to kill all containers used run :
+
+    sudo docker-compose -f docker-compose-datastore-solr.yml down
+
+Make sure all container have disappeared.
+
+    sudo docker ps

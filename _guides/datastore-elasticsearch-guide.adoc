@@ -1,0 +1,253 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+include::./attributes.adoc[]
+= Datastores - Elasticsearch
+
+:toc: right
+:toclevels: 4
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+
+
+
+Learn how to send {project-name} `Records` into Elasticsearch through de the Datastore API
+
+This guide covers:
+
+* datastore API
+* Elasticsearch setup
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* an IDE
+* JDK 1.8+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven 3.5.3+
+* The completed greeter application from the link:getting-started-guide[Getting Started Guide]
+
+
+== Setup the environment
+
+For this guide we need a {project-name} stack (Zookeeper, Kafka, Logisland) and an Elasticsearch/Kibana combo as a complete Docker compose config.
+
+[TIP]
+Please note that you should not launch silmutaneously several docker-compose because we are exposing local port in them. So running several at the same time would be conflicting. So be sure to have killed all your previously launched ({project-name}) containers.
+
+Edit a file named `docker-compose-datastore-es.yml` with the following content : 
+
+[source,dockerfile]
+----
+version: '3'
+services:
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: hurence/zookeeper
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
+    networks:
+      - logisland
+
+  # A single Kafka broker
+  kafka:
+    image: hurence/kafka:0.10.2.2-scala-2.11
+    hostname: kafka
+    ports:
+      - '9092:9092'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/
+    environment:
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_JMX_PORT: 7071
+    networks:
+      - logisland
+
+  # A waiting logisland container
+  logisland:
+    image: hurence/logisland:1.1.2
+    command: tail -f bin/logisland.sh
+    ports:
+      - '4050:4050'
+      - '8082:8082'
+      - '9999:9999'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/
+    environment:
+      KAFKA_HOME: /opt/kafka_2.11-0.10.2.2
+      KAFKA_BROKERS: kafka:9092
+      ZK_QUORUM: zookeeper:2181
+      ES_HOSTS: elasticsearch:9200
+      ES_CLUSTER_NAME: es-logisland
+    networks:
+      - logisland
+
+  # ES container
+  # make sure to increase vm.max_map_count kernel setting like documented here :
+  # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+  elasticsearch:
+    environment:
+      - ES_JAVA_OPT='-Xms1G -Xmx1G'
+      - cluster.name=es-logisland
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+    hostname: elasticsearch
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:6.6.2'
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    networks:
+      - logisland
+      - es
+
+  # Kibana for dataviz
+  kibana:
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    image: 'docker.elastic.co/kibana/kibana:5.4.0'
+    ports:
+      - '5601:5601'
+    networks:
+      - es
+
+volumes:
+  kafka-home:
+
+networks:
+  logisland:
+  es:
+----
+
+Launch your docker containers with this command :
+
+    sudo docker-compose -f docker-compose-datastore-es.yml up -d
+
+Make sure all containers are running and that there is no error.
+
+    sudo docker-compose ps
+
+Those containers should now be up and running as shown below
+
+[source,shell]
+----
+CONTAINER ID        IMAGE                                                 COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+0d9e02b22c38        docker.elastic.co/kibana/kibana:5.4.0                 "/bin/sh -c /usr/loc…"   13 seconds ago      Up 8 seconds        0.0.0.0:5601->5601/tcp                                                   conf_kibana_1
+ab15f4b5198c        docker.elastic.co/elasticsearch/elasticsearch:6.6.2   "/bin/bash bin/es-do…"   13 seconds ago      Up 7 seconds        0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp                           conf_elasticsearch_1
+a697e45d2d1a        hurence/logisland:1.1.0                               "tail -f bin/logisla…"   13 seconds ago      Up 9 seconds        0.0.0.0:4050->4050/tcp, 0.0.0.0:8082->8082/tcp, 0.0.0.0:9999->9999/tcp   conf_logisland_1
+db80cdf23b45        hurence/zookeeper                                     "/bin/sh -c '/usr/sb…"   13 seconds ago      Up 10 seconds       2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp, 7072/tcp                     conf_zookeeper_1
+7aa7a87dd16b        hurence/kafka:0.10.2.2-scala-2.11                     "start-kafka.sh"         13 seconds ago      Up 5 seconds        0.0.0.0:9092->9092/tcp                                                   conf_kafka_1
+----
+
+
+== Logisland job setup
+
+Now that we have a fully functionnal infrastructure, we can go to the stream processing job definition.
+
+The beginning of the job remains the same as the link:getting-started-guide[Getting Started] one : 
+
+* an `Engine` definition
+* a `RecordStream` to handle the processing pipeline
+* a sequence of `Processor` to parse the logs
+
+What is new here is the 
+
+* `controllerService` definition to instanciate an Elasticsearch Datastore
+* a `BulkPut` processor to send `Records` to the DataStore
+
+The `controllerServiceConfigurations` part is here to define all services that be shared by processors within the whole job, here an Elasticsearch service that will be used later in the ``BulkAddElasticsearch`` processor.
+
+[source,yaml]
+----
+engine:
+  component: com.hurence.logisland.engine.spark.KafkaStreamProcessingEngine
+  configuration:
+    spark.app.name: IndexApacheLogsDemo
+    spark.master: local[2]
+  controllerServiceConfigurations:
+
+    - controllerService: elasticsearch_service
+        component: com.hurence.logisland.service.elasticsearch.Elasticsearch_5_4_0_ClientService
+        configuration:
+            hosts: ${ES_HOSTS}
+            cluster.name: ${ES_CLUSTER_NAME}
+            batch.size: 5000
+----
+
+As you can see it uses environment variable so make sure to set them. (if you use the docker-compose file of this tutorial it is already done for you).
+You should notice that `elasticsearch_service` is the unique name given to the ControllerService which can referenced by any Processor config further in the config file.
+
+Inside this engine you will run a Kafka stream of processing, so we setup input/output topics and Kafka/Zookeeper hosts.
+Here the stream will read all the logs sent in `logisland_raw` topic and push the processing output into `logisland_events` topic.
+
+[source,yaml]
+----
+- processor: apache_parser
+    component: com.hurence.logisland.processor.SplitText
+        ...
+
+- processor: es_publisher
+    component: com.hurence.logisland.processor.elasticsearch.BulkAddElasticsearch
+    configuration:
+        elasticsearch.client.service: elasticsearch_service
+        default.index: logisland
+        default.type: event
+        timebased.index: yesterday
+        es.index.field: search_index
+        es.type.field: record_type
+----
+
+
+
+
+you can now run the job inside the logisland container
+
+    sudo docker exec -ti conf_logisland_1 ./bin/logisland.sh --conf ./conf/index-apache-logs-es.yml
+
+
+
+== Inspect the logs
+
+=== Kibana
+
+With ElasticSearch, you can use Kibana. We included one in our docker-compose file.
+
+Open up your browser and go to http://localhost:5601[http://localhost:5601/] and you should be able to explore your apache logs.
+
+Configure a new index pattern with `logisland.*` as the pattern name and `@timestamp` as the time value field.
+
+image::kibana-configure-index.png[]
+
+Then if you go to Explore panel for the latest 15' time window you'll only see logisland process_metrics events which give you
+insights about the processing bandwidth of your streams.
+
+image::kibana-logisland-metrics.png[]
+
+As we explore data logs from july 1995 we'll have to select an absolute time filter from 1995-06-30 to 1995-07-08 to see the events.
+
+image::kibana-apache-logs.png[]
+
+
+== Stop the job
+
+You can Ctr+c the console where you launched logisland job.
+Then to kill all containers used run :
+
+    sudo docker-compose -f docker-compose-datastore-es.yml down
+
+Make sure all container have disappeared.
+
+    sudo docker ps
