@@ -29,8 +29,6 @@ theme: minima
 plugins:
   - jekyll-asciidoc
   - jekyll-feed
-  - jemoji
-  - jekyll-redirect-from
   - jekyll-sitemap
 
 
