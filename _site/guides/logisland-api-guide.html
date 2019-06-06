@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logisland Api Guide</title>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Logisland: Supersonic Subatomic Java">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NJWS5L');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Syntax highlighting -->
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<body class="guides">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="content">
+    <div class="navigation-wrapper">
+  <div class="width-12-12">
+    <div class="header navigation">
+      <div class="logo-wrapper">
+        <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+      </div>
+      <div class="nav-container">
+        <nav>
+          <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+          <ul class="nav-list">
+            <li>
+              <a href="/get-started/" class="">Get Started</a>
+            </li>
+            <li>
+              <a href="/guides/" class="active">Guides</a>
+            </li>
+            <li>
+              <a href="/extensions/" class="">Extensions</a>
+            </li>
+            <li>
+              <a href="/community/" class="">Community</a>
+            </li>
+            <li>
+              <a href="/blog/" class="">Blog</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="guides">
+  <div class="width-12-12">
+    <h1 class="text-caps">Logisland Api Guide</h1>
+    <div class="sect1">
+<h2 id="api-design">1. API design</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>logisland is a framework that you can extend through its API,
+you can use it to build your own <code>Processors</code> or to build data processing apps over it.</p>
+</div>
+<div class="paragraph">
+<p>You can extend logisland with the Java low-level API as described below.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-primary-material-records">2. The primary material : Records</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The basic unit of processing is the Record.
+A <code>Record</code> is a collection of <code>Field</code>, while a <code>Field</code> has a <code>name</code>, a <code>type</code> and a <code>value</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can instanciate a <code>Record</code> like in the following code snipet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">String id = "firewall_record1";
+String type = "cisco";
+Record record = new StandardRecord(type).setId(id);
+
+assertTrue(record.isEmpty());
+assertEquals(record.size(), 0);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A record is defined by its type and a collection of fields. there are three special fields:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">// shortcut for id
+assertEquals(record.getId(), id);
+assertEquals(record.getField(FieldDictionary.RECORD_ID).asString(), id);
+
+// shortcut for time
+assertEquals(record.getTime().getTime(),
+             record.getField(FieldDictionary.RECORD_TIME).asLong());
+
+// shortcut for type
+assertEquals(record.getType(), type);
+assertEquals(record.getType(), record.getField(FieldDictionary.RECORD_TYPE).asString());
+assertEquals(record.getType(), record.getField(FieldDictionary.RECORD_TYPE).getRawValue());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the other fields have generic setters, getters and removers</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">record.setStringField("url_host", "origin-www.20minutes.fr")
+    .setField("method", FieldType.STRING, "GET")
+    .setField("response_size", FieldType.INT, 452)
+    .setField("is_outside_office_hours", FieldType.BOOLEAN, false)
+    .setField("tags", FieldType.ARRAY, Arrays.asList("spam", "filter", "mail"));
+
+assertFalse(record.hasField("unkown_field"));
+assertTrue(record.hasField("method"));
+assertEquals(record.getField("method").asString(), "GET");
+assertTrue(record.getField("response_size").asInteger() - 452 == 0);
+assertTrue(record.getField("is_outside_office_hours").asBoolean());
+record.removeField("is_outside_office_hours");
+assertFalse(record.hasField("is_outside_office_hours"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Fields are strongly typed, you can validate them</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">Record record = new StandardRecord();
+
+record.setField("request_size", FieldType.INT, 1399);
+assertTrue(record.isValid());
+
+record.setField("request_size", FieldType.INT, "zer");
+assertFalse(record.isValid());
+
+record.setField("request_size", FieldType.INT, 45L);
+assertFalse(record.isValid());
+
+record.setField("request_size", FieldType.LONG, 45L);
+assertTrue(record.isValid());
+
+record.setField("request_size", FieldType.DOUBLE, 45.5d);
+assertTrue(record.isValid());
+
+record.setField("request_size", FieldType.DOUBLE, 45.5);
+assertTrue(record.isValid());
+
+record.setField("request_size", FieldType.DOUBLE, 45L);
+assertFalse(record.isValid());
+
+record.setField("request_size", FieldType.FLOAT, 45.5f);
+assertTrue(record.isValid());
+
+record.setField("request_size", FieldType.STRING, 45L);
+assertFalse(record.isValid());
+
+record.setField("request_size", FieldType.FLOAT, 45.5d);
+assertFalse(record.isValid());</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-tools-to-handle-processing-processor">3. The tools to handle processing : Processor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>logisland is designed as a component centric framework, so there&#8217;s a layer of abstraction to build configurable components.
+Basically a component can be Configurable and Configured.</p>
+</div>
+<div class="paragraph">
+<p>The most common component you&#8217;ll use is the <code>Processor</code></p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s explain the code of a basic <code>MockProcessor</code>, that doesn&#8217;t acheive a really useful work but which is really self-explanatory
+we first need to extend <code>AbstractProcessor</code> class (or to implement <code>Processor</code> interface).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">public class MockProcessor extends AbstractProcessor {
+
+    private static Logger logger = LoggerFactory.getLogger(MockProcessor.class);
+    private static String EVENT_TYPE_NAME = "mock";
+
+    public static final PropertyDescriptor FAKE_MESSAGE
+        = new PropertyDescriptor.Builder()
+            .name("fake.message")
+            .description("a fake message")
+            .required(true)
+            .addValidator(StandardPropertyValidators.NON_EMPTY_VALIDATOR)
+            .defaultValue("yoyo")
+            .build();
+
+    @Override
+    public final List&lt;PropertyDescriptor&gt; getSupportedPropertyDescriptors() {
+        final List&lt;PropertyDescriptor&gt; descriptors = new ArrayList&lt;&gt;();
+        descriptors.add(FAKE_MESSAGE);
+
+        return Collections.unmodifiableList(descriptors);
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we have to define a list of supported <code>PropertyDescriptor</code>. All theses properties and validation stuff are handled by
+<code>Configurable</code> interface.</p>
+</div>
+<div class="paragraph">
+<p>then comes the initialization bloc of the component given a <code>ComponentContext</code> (more on this later)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">@Override
+public void init(final ProcessContext context) {
+    logger.info("init MockProcessor");
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now the real business part with the <code>process</code> method which handles all the work on the record&#8217;s collection.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">@Override
+public Collection&lt;Record&gt; process(final ProcessContext context, final Collection&lt;Record&gt; collection) {
+
+    final String message = context.getPropertyValue(FAKE_MESSAGE).asString();
+    final List&lt;Record&gt; outputRecords = new ArrayList&lt;&gt;(collection);
+    outputRecords.forEach(record -&gt; record.setStringField("message", message));
+
+    return outputRecords;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Processor can then be configured through yaml config files</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">    - processor: mock_processor
+      component: com.hurence.logisland.util.runner.MockProcessor
+      type: parser
+      documentation: a parser that produce events for nothing
+      configuration:
+         fake.message: the super message</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transverse-service-injection-controllerservice">4. Transverse service injection : ControllerService</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>we often need to share access to external Services across the Processors,
+for example bulk buffers or client connections to external data sources.</p>
+</div>
+<div class="paragraph">
+<p>For example a cache service that could cache K/V tuple across the worker node.
+We need to provide an interface API for this service :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">public interface CacheService&lt;K,V&gt; extends ControllerService {
+
+    PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
+            .name("cache.size")
+            .description("The maximum number of element in the cache.")
+            .required(false)
+            .defaultValue("16384")
+            .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
+            .build();
+
+    public V get(K k);
+
+    public void set(K k, V v);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And an implementation of the cache contract :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">public class LRUKeyValueCacheService&lt;K,V&gt; extends AbstractControllerService
+                    implements CacheService&lt;K,V&gt; {
+
+    private volatile Cache&lt;K,V&gt; cache;
+
+    @Override
+    public V get(K k) {
+        return cache.get(k);
+    }
+
+    @Override
+    public void set(K k, V v) {
+        cache.set(k, v);
+    }
+
+    @Override
+    @OnEnabled
+    public void init(ControllerServiceInitializationContext context)
+            throws InitializationException {
+        try {
+            this.cache = createCache(context);
+        }catch (Exception e){
+            throw new InitializationException(e);
+        }
+    }
+
+    @Override
+    public List&lt;PropertyDescriptor&gt; getSupportedPropertyDescriptors() {
+        List&lt;PropertyDescriptor&gt; props = new ArrayList&lt;&gt;();
+        props.add(CACHE_SIZE);
+        return Collections.unmodifiableList(props);
+    }
+
+    protected Cache&lt;K,V&gt; createCache(final ControllerServiceInitializationContext context)
+            throws IOException, InterruptedException {
+        final int capacity = context.getPropertyValue(CACHE_SIZE).asInteger();
+        return new LRUCache&lt;K,V&gt;(capacity);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then use this service in a custom processor :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">public class com.hurence.logisland.service.elasticsearch.TestProcessor extends AbstractProcessor {
+
+    static final PropertyDescriptor CACHE_SERVICE = new PropertyDescriptor.Builder()
+            .name("cache.service")
+            .description("CacheService")
+            .identifiesControllerService(CacheService.class)
+            .required(true)
+            .build();
+
+    @Override
+    public boolean hasControllerService() {
+        return true;
+    }
+
+    @Override
+    public List&lt;PropertyDescriptor&gt; getSupportedPropertyDescriptors() {
+        List&lt;PropertyDescriptor&gt; propDescs = new ArrayList&lt;&gt;();
+        propDescs.add(CACHE_SERVICE);
+        return propDescs;
+    }
+
+    @Override
+    public Collection&lt;Record&gt; process(ProcessContext context, Collection&lt;Record&gt; records) {
+        return Collections.emptyList();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The injection is done through yaml config files by injecting the instance of <code>lru_cache</code> Service.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">...
+
+controllerServiceConfigurations:
+
+- controllerService: lru_cache
+    component: com.hurence.logisland.service.elasticsearch.LRUKeyValueCacheService
+    type: service
+    documentation: cache service
+    configuration:
+    cache.size: 5000
+
+streamConfigurations:
+- stream: parsing_stream
+    component: com.hurence.logisland.stream.spark.KafkaRecordStreamParallelProcessing
+
+    ...
+
+    processorConfigurations:
+
+    - processor: mock_processor
+        component: com.hurence.logisland.processor.com.hurence.logisland.service.elasticsearch.TestProcessor
+        type: parser
+        documentation: a parser that produce events for nothing
+        configuration:
+            cache.service: lru_cache</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="chaining-processors-in-a-stream-recordstream">5. Chaining processors in a stream : RecordStream</h2>
+<div class="sectionbody">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>warning:: @todo</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-the-processors-flow-engine">6. Running the processor&#8217;s flow : Engine</h2>
+<div class="sectionbody">
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>warning:: @todo</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="testing-your-processors-testrunner">7. Testing your processors : TestRunner</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you have coded your processor, pretty sure you want to test it with unit test.
+The framework provides you with the <code>TestRunner</code> tool for that.
+All you need is to instantiate a Testrunner with your Processor and its properties.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">final String APACHE_LOG_SCHEMA = "/schemas/apache_log.avsc";
+final String APACHE_LOG = "/data/localhost_access.log";
+final String APACHE_LOG_FIELDS =
+    "src_ip,identd,user,record_time,http_method,http_query,http_version,http_status,bytes_out";
+final String APACHE_LOG_REGEX =
+    "(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+\\[([\\w:/]+\\s[+\\-]\\d{4})\\]\\s+\"(\\S+)\\s+(\\S+)\\s+(\\S+)\"\\s+(\\S+)\\s+(\\S+)";
+
+final TestRunner testRunner = TestRunners.newTestRunner(new SplitText());
+testRunner.setProperty(SplitText.VALUE_REGEX, APACHE_LOG_REGEX);
+testRunner.setProperty(SplitText.VALUE_FIELDS, APACHE_LOG_FIELDS);
+
+// check if config is valid
+testRunner.assertValid();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now enqueue some messages as if they were sent to input Kafka topics</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">testRunner.clearQueues();
+testRunner.enqueue(SplitTextTest.class.getResourceAsStream(APACHE_LOG));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now run the process method and check that every <code>Record</code> has been correctly processed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">testRunner.run();
+testRunner.assertAllInputRecordsProcessed();
+testRunner.assertOutputRecordsCount(200);
+testRunner.assertOutputErrorCount(0);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can validate that all output records are validated against an avro schema</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">final RecordValidator avroValidator = new AvroRecordValidator(SplitTextTest.class.getResourceAsStream
+testRunner.assertAllRecords(avroValidator);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And check if your output records behave as expected.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="java" class="language-java hljs">MockRecord out = testRunner.getOutputRecords().get(0);
+out.assertFieldExists("src_ip");
+out.assertFieldNotExists("src_ip2");
+out.assertFieldEquals("src_ip", "10.3.10.134");
+out.assertRecordSizeEquals(9);
+out.assertFieldEquals(FieldDictionary.RECORD_TYPE, "apache_log");
+out.assertFieldEquals(FieldDictionary.RECORD_TIME, 1469342728000L);</code></pre>
+</div>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">Logisland is open. Logisland and its extensions are available under the <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/hurence/logisland.io' target='_blank'>fork the website</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <span>Navigation</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/guides">Guides</a></li>
+          
+            <li><a href="/get-started">Get Started</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Contribute</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://twitter.com/LogislandC">Follow us</a></li>
+          
+            <li><a href="https://github.com/hurence/logisland">GitHub</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Get Help</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://gitter.im/logisland/logisland">Chatroom</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/logisland-dev">Google&nbsp;Groups</a></li>
+          
+            <li><a href="/faq">FAQ</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <span>Logisland is proudly made of</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://kafka.apache.org" target="_blank">Kafka</a></li>
+          
+            <li><a href="https://spark.apache.org" target="_blank">Spark</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a>
+    </span>
+    <span class="redhat">
+      an Hurence sponsored project   
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.hurence.com/" target="_blank"><img src="/assets/images/logo-hurence.png"></a>
+    </span>
+  </div>
+</div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/scroll-down.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

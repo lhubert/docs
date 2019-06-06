@@ -7,36 +7,43 @@ permalink: /guides/
 <div class="grid__item width-4-12 hide-mobile toc" markdown="1">
 ## Table of Contents
 
+
+### Event Processing
+
+- [Event Aggregation]({{site.baseurl}}/guides/event-aggregation-guide)
+- [Query Matching]({{site.baseurl}}/guides/query-matching-guide)
+- [Using Expression language]({{site.baseurl}}/guides/el-guide)
+
 ### Core
 
+- [Kafka Operations]({{site.baseurl}}/guides/kafka-operations-guide)
+- [Kafka Best Practices]({{site.baseurl}}/guides/kafka-best-practices-guide)
 
-- [Configuring Your Application]({{site.baseurl}}/guides/application-configuration-guide)
-- [Debugging Your Application]({{site.baseurl}}/guides/application-debug-guide)
-- [Monitoring YourApplication]({{site.baseurl}}/guides/application-monitoring-guide)
-- [Testing Your Application]({{site.baseurl}}/guides/application-testing-guide)
-- [Configuring Logging]({{site.baseurl}}/guides/application-logging-guide)
 
-### Web analytics
+### Writing Extensions
 
-- [User sessions]({{site.baseurl}}/guides/web-sessionization-guide)
+- [Logisland Java API]({{site.baseurl}}/guides/logisland-api-guide)
+- [Writing Your Own Extension]({{site.baseurl}}/guides/extension-authors-guide)
+- [Adding Extensions]({{site.baseurl}}/guides/components-guide)
 
-### Smart Alerting
-
-- [Using Match Queries]({{site.baseurl}}/guides/matchquery-guide)
-- [Aggregation Queries]({{site.baseurl}}/guides/aggregation-guide)
-- [Using Expression language]({{site.baseurl}}/guides/el-guide)
 
 ### Time Series
 
 - [Time Series analytics]({{site.baseurl}}/guides/timeseries-guide)
 
+### Web analytics
+
+- [User sessions]({{site.baseurl}}/guides/web-sessionization-guide)
+
 ### Data Stores
 
-- [Using Kafka]({{site.baseurl}}/guides/kafka-guide)
-- [Using SolR]({{site.baseurl}}/guides/solr-guide)
-- [Using Redis]({{site.baseurl}}/guides/redis-guide)
-- [Using HBase]({{site.baseurl}}/guides/hbase-guide)
-- [Using Elasticsearch]({{site.baseurl}}/guides/es-guide)
+
+- [Using Connectors]({{site.baseurl}}/guides/datastore-connectors-guide)
+- [Using Kafka]({{site.baseurl}}/guides/datastore-kafka-guide)
+- [Using SolR]({{site.baseurl}}/guides/datastore-solr-guide)
+- [Using Redis]({{site.baseurl}}/guides/datastore-redis-guide)
+- [Using HBase]({{site.baseurl}}/guides/datastore-hbase-guide)
+- [Using Elasticsearch]({{site.baseurl}}/guides/datastore-es-guide)
 
 ### Security
 
@@ -63,10 +70,6 @@ permalink: /guides/
 - [Using Avro serializer]({{site.baseurl}}/guides/serialize-avro-guide)
 
 
-### Writing Extensions
-
-- [Writing Your Own Extension]({{site.baseurl}}/guides/extension-authors-guide)
-- [Adding Extensions]({{site.baseurl}}/guides/components-guide)
 
 
 

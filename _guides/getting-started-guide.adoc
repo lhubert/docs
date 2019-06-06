@@ -39,7 +39,7 @@ To complete this guide, you need:
 
 In this guide, we create a straightforward application parsing apache logs with a regex from `logisland_raw` topic and send structured events to `logisland_events`
 
-image::getting-started-architecture.png[alt=Architecture]
+image::logisland-stream-logs-parsing.png[alt=Architecture]
 
 This guide also covers the testing kafka access .
 

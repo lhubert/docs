@@ -1,11 +1,46 @@
+---
+layout: vision
+permalink: /vision/architecture
+---
 include::../attributes.adoc[]
 = {project-name} - Architecture
 
-image::images/architecture-phases.png
+{project-name} has an `event driven architecture` that handle all the hard boilerplate code to provide a scalable stream processing framework.
 
-{project-name} has an architecture that does as much processing as possible at build time. Annotations and other descriptors
-are processed as early as possible, and then {project-name} will generate bytecode based on this information. This results
-in lower memory usage and faster startup speeds at runtime.
+=== Core Philosophy : Event sourcing
+
+Most of the systems in this data world can be observables through their **events**.
+You just have to look at the https://msdn.microsoft.com/en-us/library/dn589792.aspx[event sourcing pattern] to get an idea of how we could define any system state as a sequence of temporal events. The core nature of events can be very different from one organisation to another but consists mainly in `system/application logs`, `sensor data`, `user click streams`, etc. Large and complex systems, made of number of heterogeneous components are not easy to monitor, especially when have to deal with distributed computing. Most of the time of IT resources is spent in maintenance tasks, so there's a real need for tools to help achieving them.
+
+Use an append-only store to record the full series of events that describe actions taken on data in a domain, rather than storing just the current state, so that the store can be used to materialize the domain objects. This pattern can simplify tasks in complex domains by avoiding the requirement to synchronize the data model and the business domain; improve performance, scalability, and responsiveness; provide consistency for transactional data; and maintain full audit trails and history that may enable compensating actions.
+
+image::event-sourcing-exemple.png[Event sourcing Example]
+
+Most applications work with data, and the typical approach is for the application to maintain the current state of the data by updating it as users work with the data. For example, in the traditional create, read, update, and delete (CRUD) model a typical data process will be to read data from the store, make some modifications to it, and update the current state of the data with the new values—often by using transactions that lock the data. The `Event Sourcing pattern` defines an approach to handling operations on data that is driven by a sequence of events, each of which is recorded in an append-only store. Application code sends a series of events that imperatively describe each action that has occurred on the data to the event store, where they are persisted. Each event represents a set of changes to the data (such as AddedItemToOrder).
+
+
+
+[TIP]
+{project-name} will help us to handle replayable events from any kind of source due to its event sourcing core philosophy.
+
+=== Data driven architecture
+
+image::data-driven-computing.png[Data Driven]
+
+
+=== Technical design
+
+{project-name} is an event processing framework based on Kafka and Spark. The main goal of this Open Source platform is to
+abstract the level of complexity of complex event processing at scale. Of course many people start with an ELK stack,
+which is really great but not enough to elaborate a really complete system monitoring tool.
+So with {project-name}, you'll move the log processing burden to a powerful distributed stack.
+
+Kafka acts a the distributed message queue middleware while Spark is the core of the distributed processing.
+{project-name} glue those technologies to simplify log complex event processing at scale.
+
+
+image::logisland-workflow.png[]
+
 
 == Application Architecture
 

@@ -1,0 +1,206 @@
+////
+This guide is maintained in the main Logisland repository
+and pull requests should be submitted there:
+https://github.com/hurence/logisland/tree/master/docs/src/main/asciidoc
+////
+
+include::./attributes.adoc[]
+= {project-name} - Event Aggregation
+
+:toc: macro
+:toclevels: 4
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 4
+
+
+Learn how to test your Logisland Application.
+This guide covers:
+
+* avro schema validation
+* event aggregation stream
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* an IDE
+* JDK 1.8+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven 3.5.3+
+* The completed greeter application from the link:getting-started-guide[Getting Started Guide]
+
+
+== Architecture
+
+In this guide, we expand on the initial log parsing stream that was created as part of the Getting Started Guide.
+We cover how to generate time window metrics on some http traffic (apache log records).
+
+
+image::logisland-stream-event-aggregation.png[Archi]
+
+== Solution
+
+We recommend that you follow the instructions in the next sections and create the application step by step.
+However, you can go right to the completed example.
+
+Clone the Git repository: `git clone {quickstarts-clone-url}`, or download an {quickstarts-archive-url}[archive].
+
+The solution is located in the `event-aggregation` directory.
+
+This guide assumes you already have the completed application from the `getting-started` directory.
+
+
+== Logisland job setup
+
+The logisland job for this tutorial is already packaged in the tar.gz assembly and you can find it here :
+
+Our application will add a new stream to the previous one : the sql stream is a special one one use a link:../extensions/kafkarecordstreamsqlaggregator.html[KafkaRecordStreamSQLAggregator].
+This stream defines input/output topics names as well as Serializers, avro schema.
+
+TIP: The http://avro.apache.org/docs/1.7.7/spec.html[Avro schema] is set for the input topic and must be same as the avro schema of the output topic for the stream that
+produces the records (please refer to link:getting-started-guide[Getting Started Guide])
+
+
+[source,json,subs=attributes+]
+----
+{  
+    "version":1,
+    "type": "record",
+    "name": "com.hurence.logisland.record.apache_log",
+    "fields": [
+        { "name": "record_errors",   "type": [ {"type": "array", "items": "string"},"null"] },
+        { "name": "record_raw_key", "type": ["string","null"] },
+        { "name": "record_raw_value", "type": ["string","null"] },
+        { "name": "record_id",   "type": ["string"] },
+        { "name": "record_time", "type": ["long"] },
+        { "name": "record_type", "type": ["string"] },
+        { "name": "src_ip",      "type": ["string","null"] },
+        { "name": "http_method", "type": ["string","null"] },
+        { "name": "bytes_out",   "type": ["long","null"] },
+        { "name": "http_query",  "type": ["string","null"] },
+        { "name": "http_version","type": ["string","null"] },
+        { "name": "http_status", "type": ["string","null"] },
+        { "name": "identd",      "type": ["string","null"] },
+        { "name": "user",        "type": ["string","null"] }    
+    ]
+}
+----
+
+The most important part of the `KafkaRecordStreamSQLAggregator` is its `sql.query` property which defines
+a query to apply on the incoming records for the given time window.
+
+The following SQL query will be applied on sliding window of 10" of records.
+
+[source,sql,subs=attributes+]
+----
+SELECT count(*) AS connections_count, 
+       avg(bytes_out) AS avg_bytes_out, 
+       src_ip, 
+       first(record_time) as record_time
+FROM logisland_events
+GROUP BY src_ip
+ORDER BY connections_count DESC
+LIMIT 20
+----    
+
+
+which will consider ``logisland_events`` topic as SQL table and create 20 output Record with the fields avg_bytes_out, src_ip & record_time.
+the statement with record_time will ensure that the created Records will correspond to the effective input event time (not the actual time).
+
+
+[source,yaml,subs=attributes+]
+----
+- stream: metrics_by_host
+    component: com.hurence.logisland.stream.spark.KafkaRecordStreamSQLAggregator
+    type: stream
+    documentation: a processor that links
+    configuration:
+    kafka.input.topics: logisland_events
+    kafka.output.topics: logisland_aggregations
+    kafka.error.topics: logisland_errors
+    kafka.input.topics.serializer: com.hurence.logisland.serializer.KryoSerializer
+    kafka.output.topics.serializer: com.hurence.logisland.serializer.KryoSerializer
+    kafka.error.topics.serializer: com.hurence.logisland.serializer.JsonSerializer
+    kafka.metadata.broker.list: sandbox:9092
+    kafka.zookeeper.quorum: sandbox:2181
+    kafka.topic.autoCreate: true
+    kafka.topic.default.partitions: 2
+    kafka.topic.default.replicationFactor: 1
+    window.duration: 10
+    avro.input.schema: >
+        {  "version":1,
+            "type": "record",
+            "name": "com.hurence.logisland.record.apache_log",
+            "fields": [
+            { "name": "record_errors",   "type": [ {"type": "array", "items": "string"},"null"] },
+            { "name": "record_raw_key", "type": ["string","null"] },
+            { "name": "record_raw_value", "type": ["string","null"] },
+            { "name": "record_id",   "type": ["string"] },
+            { "name": "record_time", "type": ["long"] },
+            { "name": "record_type", "type": ["string"] },
+            { "name": "src_ip",      "type": ["string","null"] },
+            { "name": "http_method", "type": ["string","null"] },
+            { "name": "bytes_out",   "type": ["long","null"] },
+            { "name": "http_query",  "type": ["string","null"] },
+            { "name": "http_version","type": ["string","null"] },
+            { "name": "http_status", "type": ["string","null"] },
+            { "name": "identd",      "type": ["string","null"] },
+            { "name": "user",        "type": ["string","null"] }    ]}
+    sql.query: >
+        SELECT count(*) AS connections_count, avg(bytes_out) AS avg_bytes_out, src_ip
+        FROM logisland_events
+        GROUP BY src_ip
+        ORDER BY event_count DESC
+        LIMIT 20
+    max.results.count: 1000
+    output.record.type: top_client_metrics
+----
+
+Here we will compute every x seconds, the top twenty `src_ip` for connections count.
+The result of the query will be pushed into to `logisland_aggregations` topic as new `top_client_metrics` Record containing `connections_count` and `avg_bytes_out` fields.
+
+
+
+== Launch the script
+For this tutorial we will handle some apache logs with a splitText parser and send them to Elastiscearch
+Connect a shell to your logisland container to launch the following streaming jobs.
+
+`sudo docker exec -i -t logisland bin/logisland.sh --conf conf/event-aggregation.yml`
+
+== See what we have in return
+
+Logisland will handle the parsing of the log lines and structure them as Records. Those will be sent in another Kafka topic.
+
+    sudo docker exec -ti logisland-getting-started_kafka_1 /opt/kafka/bin/kafka-console-consumer.sh  \\ 
+        --bootstrap-server kafka:9092 --topic logisland_agregations --from-beginning
+
+
+You should see the apache log events such as : 
+
+[source,json]
+----
+{
+  "id" : "e80c7088-6676-4b56-9aaf-30cfbe1a4367",
+  "type" : "apache_log",
+  "creationDate" : 804571706000,
+  "fields" : {
+    "src_ip" : "166.79.67.111",
+    "record_id" : "e80c7088-6676-4b56-9aaf-30cfbe1a4367",
+    "http_method" : "GET",
+    "record_value" : "166.79.67.111 - - [01/Jul/1995:00:08:26 -0400] \"GET /images/NASA-logosmall.gif HTTP/1.0\" 200 786",
+    "http_query" : "/images/NASA-logosmall.gif",
+    "bytes_out" : "786",
+    "identd" : "-",
+    "http_version" : "HTTP/1.0",
+    "http_status" : "200",
+    "record_time" : 804571706000,
+    "user" : "-",
+    "record_type" : "apache_log"
+  }
+}
+----
