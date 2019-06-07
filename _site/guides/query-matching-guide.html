@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Query Matching Guide</title>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Logisland: Supersonic Subatomic Java">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NJWS5L');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Syntax highlighting -->
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <!-- Begin Jekyll SEO tag v2.6.0 -->
+<title>Query Matching Guide | Logisland</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Query Matching Guide" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Logisland: Supersonic Subatomic Java" />
+<meta property="og:description" content="Logisland: Supersonic Subatomic Java" />
+<link rel="canonical" href="http://localhost:4000/guides/query-matching-guide.html" />
+<meta property="og:url" content="http://localhost:4000/guides/query-matching-guide.html" />
+<meta property="og:site_name" content="Logisland" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-07T14:15:05+02:00" />
+<script type="application/ld+json">
+{"headline":"Query Matching Guide","dateModified":"2019-06-07T14:15:05+02:00","datePublished":"2019-06-07T14:15:05+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/guides/query-matching-guide.html"},"url":"http://localhost:4000/guides/query-matching-guide.html","description":"Logisland: Supersonic Subatomic Java","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+<body class="guides">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="content">
+    <div class="navigation-wrapper">
+  <div class="width-12-12">
+    <div class="header navigation">
+      <div class="logo-wrapper">
+        <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+      </div>
+      <div class="nav-container">
+        <nav>
+          <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+          <ul class="nav-list">
+            <li>
+              <a href="/get-started/" class="">Get Started</a>
+            </li>
+            <li>
+              <a href="/guides/" class="active">Guides</a>
+            </li>
+            <li>
+              <a href="/extensions/" class="">Extensions</a>
+            </li>
+            <li>
+              <a href="/community/" class="">Community</a>
+            </li>
+            <li>
+              <a href="/blog/" class="">Blog</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="guides">
+  <div class="width-12-12">
+    <h1 class="text-caps">Query Matching Guide</h1>
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Learn how to test your Logisland Application.
+This guide covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>lucene syntax</p>
+</li>
+<li>
+<p>matching queries</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites">1. Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To complete this guide, you need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>less than 15 minutes</p>
+</li>
+<li>
+<p>an IDE</p>
+</li>
+<li>
+<p>JDK 1.8+ installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Apache Maven 3.5.3+</p>
+</li>
+<li>
+<p>The completed greeter application from the <a href="event-aggregation-guide">Event Aggregation Guide</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="architecture">2. Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this guide, we expand on the initial stream that was created as part of the Event Aggregation Guide.
+We cover how to raise custom alerts based on lucene matching query criterion.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/logisland-stream-match-query.png" alt="Archi">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="solution">3. Solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We recommend that you follow the instructions in the next sections and create the application step by step.
+However, you can go right to the completed example.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the Git repository: <code>git clone <a href="https://github.com/hurence/logisland-quickstarts.git" class="bare">https://github.com/hurence/logisland-quickstarts.git</a></code>, or download an <a href="https://github.com/hurence/logisland-quickstarts/archive/master.zip">archive</a>.</p>
+</li>
+<li>
+<p>The solution is located in the <code>query-matching</code> directory.</p>
+</li>
+<li>
+<p>This guide assumes you already have the completed application from the `event-aggregation ` directory.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logisland-job-setup">4. Logisland job setup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The logisland job for this tutorial is already packaged in the tar.gz assembly and you can find it here :</p>
+</div>
+<div class="paragraph">
+<p>Our application will be composed of 4 streams :</p>
+</div>
+<div class="paragraph">
+<p>The first one converts apache logs to typed records (please note the use of <code>ConvertFieldsType</code> processor)</p>
+</div>
+<div class="paragraph">
+<p>The second one is the sql stream is a special one one use a <a href="../extensions/kafkarecordstreamsqlaggregator.html">KafkaRecordStreamSQLAggregator</a>.
+This stream defines input/output topics names as well as Serializers, avro schema.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <a href="http://avro.apache.org/docs/1.7.7/spec.html">Avro schema</a> is set for the input topic and must be same as the avro schema of the output topic for the stream that
+produces the records (please refer to <a href="getting-started-guide.html">Getting Started Guide</a>)
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The most important part of the <code>KafkaRecordStreamSQLAggregator</code> is its <code>sql.query</code> property which defines
+a query to apply on the incoming records for the given time window.</p>
+</div>
+<div class="paragraph">
+<p>The following SQL query will be applied on sliding window of 10" of records.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="sql" class="language-sql hljs">SELECT count(*) AS connections_count,
+       avg(bytes_out) AS avg_bytes_out,
+       src_ip,
+       first(record_time) as record_time
+FROM logisland_events
+GROUP BY src_ip
+ORDER BY connections_count DESC
+LIMIT 20</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>which will consider <code>logisland_events</code> topic as SQL table and create 20 output Record with the fields avg_bytes_out, src_ip &amp; record_time.
+the statement with record_time will ensure that the created Records will correspond to the effective input event time (not the actual time).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">- stream: metrics_by_host
+    component: com.hurence.logisland.stream.spark.KafkaRecordStreamSQLAggregator
+    type: stream
+    documentation: a processor that links
+    configuration:
+    kafka.input.topics: logisland_events
+    kafka.output.topics: logisland_aggregations
+    kafka.error.topics: logisland_errors
+    kafka.input.topics.serializer: com.hurence.logisland.serializer.KryoSerializer
+    kafka.output.topics.serializer: com.hurence.logisland.serializer.KryoSerializer
+    kafka.error.topics.serializer: com.hurence.logisland.serializer.JsonSerializer
+    kafka.metadata.broker.list: sandbox:9092
+    kafka.zookeeper.quorum: sandbox:2181
+    kafka.topic.autoCreate: true
+    kafka.topic.default.partitions: 2
+    kafka.topic.default.replicationFactor: 1
+    window.duration: 10
+    avro.input.schema: &gt;
+        {  "version":1,
+            "type": "record",
+            "name": "com.hurence.logisland.record.apache_log",
+            "fields": [
+            { "name": "record_errors",   "type": [ {"type": "array", "items": "string"},"null"] },
+            { "name": "record_raw_key", "type": ["string","null"] },
+            { "name": "record_raw_value", "type": ["string","null"] },
+            { "name": "record_id",   "type": ["string"] },
+            { "name": "record_time", "type": ["long"] },
+            { "name": "record_type", "type": ["string"] },
+            { "name": "src_ip",      "type": ["string","null"] },
+            { "name": "http_method", "type": ["string","null"] },
+            { "name": "bytes_out",   "type": ["long","null"] },
+            { "name": "http_query",  "type": ["string","null"] },
+            { "name": "http_version","type": ["string","null"] },
+            { "name": "http_status", "type": ["string","null"] },
+            { "name": "identd",      "type": ["string","null"] },
+            { "name": "user",        "type": ["string","null"] }    ]}
+    sql.query: &gt;
+        SELECT count(*) AS connections_count, avg(bytes_out) AS avg_bytes_out, src_ip
+        FROM logisland_events
+        GROUP BY src_ip
+        ORDER BY event_count DESC
+        LIMIT 20
+    max.results.count: 1000
+    output.record.type: top_client_metrics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we will compute every x seconds, the top twenty <code>src_ip</code> for connections count.
+The result of the query will be pushed into to <code>logisland_aggregations</code> topic as new <code>top_client_metrics</code> Record containing <code>connections_count</code> and <code>avg_bytes_out</code> fields.</p>
+</div>
+<div class="paragraph">
+<p>the third match some criteria to send some alerts</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">- processor: match_query
+    component: com.hurence.logisland.processor.MatchQuery
+    type: processor
+    documentation: a parser that produce alerts from lucene queries
+    configuration:
+    numeric.fields: bytes_out,connections_count
+    too_much_bandwidth: avg_bytes_out:[25000 TO 5000000]
+    too_many_connections: connections_count:[150 TO 300]
+    output.record.type: threshold_alert</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lucene-query-syntax">5. Lucene Query Syntax</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here are some query examples demonstrating the query syntax.</p>
+</div>
+<div class="paragraph">
+<p><strong>Keyword matching</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Search for word "foo" in the title field : <code>title:foo</code></p>
+</li>
+<li>
+<p>Search for phrase "foo bar" in the title field : <code>title:"foo bar"</code></p>
+</li>
+<li>
+<p>Search for phrase "foo bar" in the title field AND the phrase "quick fox" in the body field : <code>title:"foo bar" AND body:"quick fox"</code></p>
+</li>
+<li>
+<p>Search for either the phrase "foo bar" in the title field AND the phrase "quick fox" in the body field, or the word "fox" in the title field : <code>(title:"foo bar" AND body:"quick fox") OR title:fox</code></p>
+</li>
+<li>
+<p>Search for word "foo" and not "bar" in the title field : <code>title:foo -title:bar</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Wildcard matching</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Search for any word that starts with "foo" in the title field : <code>title:foo*</code></p>
+</li>
+<li>
+<p>Search for any word that starts with "foo" and ends with bar in the title field : <code>title:foo*bar</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that Lucene doesn&#8217;t support using a * symbol as the first character of a search.</p>
+</div>
+<div class="paragraph">
+<p><strong>Proximity matching</strong></p>
+</div>
+<div class="paragraph">
+<p>Lucene supports finding words are a within a specific distance away.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Search for "foo bar" within 4 words from each other : <code>"foo bar"~4</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that for proximity searches, exact matches are proximity zero, and word transpositions (bar foo) are proximity 1.</p>
+</div>
+<div class="paragraph">
+<p>A query such as <code>"foo bar"~10000000</code> is an interesting alternative to <code>foo AND bar</code>.</p>
+</div>
+<div class="paragraph">
+<p>Whilst both queries are effectively equivalent with respect to the documents that are returned, the proximity query assigns a higher score to documents for which the terms foo and bar are closer together.</p>
+</div>
+<div class="paragraph">
+<p><strong>Range searches</strong></p>
+</div>
+<div class="paragraph">
+<p>Range Queries allow one to match documents whose field(s) values are between the lower and upper bound specified by the Range Query. Range Queries can be inclusive or exclusive of the upper and lower bounds. Sorting is done lexicographically.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mod_date:[20020101 TO 20030101]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Solr&#8217;s built-in field types are very convenient for performing range queries on numbers without requiring padding.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="launch-the-script">6. Launch the script</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For this tutorial we will handle some apache logs with a splitText parser and send them to Elastiscearch
+Connect a shell to your logisland container to launch the following streaming jobs.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>`docker exec -i -t logisland bin/logisland.sh --conf conf/query-matching.yml`</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="check-your-alerts-with-kibana">7. Check your alerts with Kibana</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As we explore data logs from july 1995 we&#8217;ll have to select an absolute time filter from 1995-06-30 to 1995-07-08 to see the events.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/kibana-logisland-aggregates-events.png" alt="Kibana">
+</div>
+</div>
+<div class="paragraph">
+<p>you can filter your events with <code>record_type:connection_alert</code> to get 71733 connections alerts matching your query</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/kibana-blacklisted-host.png" alt="Kibana">
+</div>
+</div>
+<div class="paragraph">
+<p>if we filter now on threshold alerts whith <code>record_type:threshold_alert</code> you&#8217;ll get the 13 src_ip that have been catched by the threshold query.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/kibana-threshold-alerts.png" alt="Kibana">
+</div>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">Logisland is open. Logisland and its extensions are available under the <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/hurence/logisland.io' target='_blank'>fork the website</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <span>Navigation</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/guides">Guides</a></li>
+          
+            <li><a href="/get-started">Get Started</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Contribute</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://twitter.com/LogislandC">Follow us</a></li>
+          
+            <li><a href="https://github.com/hurence/logisland">GitHub</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Get Help</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://gitter.im/logisland/logisland">Chatroom</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/logisland-dev">Google&nbsp;Groups</a></li>
+          
+            <li><a href="/faq">FAQ</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <span>Logisland is proudly made of</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://kafka.apache.org" target="_blank">Kafka</a></li>
+          
+            <li><a href="https://spark.apache.org" target="_blank">Spark</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a>
+    </span>
+    <span class="redhat">
+      an Hurence sponsored project   
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.hurence.com/" target="_blank"><img src="/assets/images/logo-hurence.png"></a>
+    </span>
+  </div>
+</div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/scroll-down.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

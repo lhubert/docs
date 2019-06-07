@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Datastore Solr Guide</title>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Logisland: Supersonic Subatomic Java">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NJWS5L');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Syntax highlighting -->
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <!-- Begin Jekyll SEO tag v2.6.0 -->
+<title>Datastore Solr Guide | Logisland</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Datastore Solr Guide" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Logisland: Supersonic Subatomic Java" />
+<meta property="og:description" content="Logisland: Supersonic Subatomic Java" />
+<link rel="canonical" href="http://localhost:4000/guides/datastore-solr-guide.html" />
+<meta property="og:url" content="http://localhost:4000/guides/datastore-solr-guide.html" />
+<meta property="og:site_name" content="Logisland" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-07T14:15:05+02:00" />
+<script type="application/ld+json">
+{"headline":"Datastore Solr Guide","dateModified":"2019-06-07T14:15:05+02:00","datePublished":"2019-06-07T14:15:05+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/guides/datastore-solr-guide.html"},"url":"http://localhost:4000/guides/datastore-solr-guide.html","description":"Logisland: Supersonic Subatomic Java","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+<body class="guides">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="content">
+    <div class="navigation-wrapper">
+  <div class="width-12-12">
+    <div class="header navigation">
+      <div class="logo-wrapper">
+        <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+      </div>
+      <div class="nav-container">
+        <nav>
+          <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+          <ul class="nav-list">
+            <li>
+              <a href="/get-started/" class="">Get Started</a>
+            </li>
+            <li>
+              <a href="/guides/" class="active">Guides</a>
+            </li>
+            <li>
+              <a href="/extensions/" class="">Extensions</a>
+            </li>
+            <li>
+              <a href="/community/" class="">Community</a>
+            </li>
+            <li>
+              <a href="/blog/" class="">Blog</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="guides">
+  <div class="width-12-12">
+    <h1 class="text-caps">Datastore Solr Guide</h1>
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Learn how to send Logisland <code>Records</code> into SolR through de the Datastore API</p>
+</div>
+<div class="paragraph">
+<p>This guide covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>datastore API</p>
+</li>
+<li>
+<p>SolR setup</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites">1. Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To complete this guide, you need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>less than 15 minutes</p>
+</li>
+<li>
+<p>an IDE</p>
+</li>
+<li>
+<p>JDK 1.8+ installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Apache Maven 3.5.3+</p>
+</li>
+<li>
+<p>The completed greeter application from the <a href="getting-started-guide">Getting Started Guide</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="setup-the-environment">2. Setup the environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For this guide we need a Logisland stack (Zookeeper, Kafka, Logisland) and an SolR as a complete Docker compose config.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Please note that you should not launch silmutaneously several docker-compose because we are exposing local port in them. So running several at the same time would be conflicting. So be sure to have killed all your previously launched (Logisland) containers.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit a file named <code>docker-compose-datastore-solr.yml</code> with the following content :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="dockerfile" class="language-dockerfile hljs">version: '3'
+services:
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: hurence/zookeeper
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
+    networks:
+      - logisland
+
+  # A single Kafka broker
+  kafka:
+    image: hurence/kafka:0.10.2.2-scala-2.11
+    hostname: kafka
+    ports:
+      - '9092:9092'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/
+    environment:
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_JMX_PORT: 7071
+    networks:
+      - logisland
+
+  # Logisland container : does nothing but launching
+  logisland:
+    image: hurence/logisland:1.1.2
+    command: tail -f bin/logisland.sh
+    ports:
+      - '4050:4050'
+      - '8082:8082'
+      - '9999:9999'
+    volumes:
+      - kafka-home:/opt/kafka_2.11-0.10.2.2/ # Just so that kafka scripts are available inside container
+    environment:
+      KAFKA_HOME: /opt/kafka_2.11-0.10.2.2
+      KAFKA_BROKERS: kafka:9092
+      ZK_QUORUM: zookeeper:2181
+      SOLR_CONNECTION: http://solr:8983/solr
+    networks:
+      - logisland
+
+  # A single SolR node
+  solr:
+    hostname: solr
+    image: 'solr:6.6.2'
+    ports:
+      - '8983:8983'
+    networks:
+      - logisland
+
+volumes:
+  kafka-home:
+
+networks:
+  logisland:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Launch your docker containers with this command :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker-compose -f docker-compose-datastore-solr.yml up -d</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure all containers are running and that there is no error.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker-compose ps</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Those containers should now be up and running as shown below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">CONTAINER ID        IMAGE                                                 COMMAND                  CREATED             STATUS              PORTS                                                                    NAMES
+0d9e02b22c38        docker.elastic.co/kibana/kibana:5.4.0                 "/bin/sh -c /usr/loc…"   13 seconds ago      Up 8 seconds        0.0.0.0:5601-&gt;5601/tcp                                                   conf_kibana_1
+ab15f4b5198c        docker.elastic.co/SolR/SolR:6.6.2   "/bin/bash bin/es-do…"   13 seconds ago      Up 7 seconds        0.0.0.0:9200-&gt;9200/tcp, 0.0.0.0:9300-&gt;9300/tcp                           conf_SolR_1
+a697e45d2d1a        hurence/logisland:1.1.0                               "tail -f bin/logisla…"   13 seconds ago      Up 9 seconds        0.0.0.0:4050-&gt;4050/tcp, 0.0.0.0:8082-&gt;8082/tcp, 0.0.0.0:9999-&gt;9999/tcp   conf_logisland_1
+db80cdf23b45        hurence/zookeeper                                     "/bin/sh -c '/usr/sb…"   13 seconds ago      Up 10 seconds       2888/tcp, 3888/tcp, 0.0.0.0:2181-&gt;2181/tcp, 7072/tcp                     conf_zookeeper_1
+7aa7a87dd16b        hurence/kafka:0.10.2.2-scala-2.11                     "start-kafka.sh"         13 seconds ago      Up 5 seconds        0.0.0.0:9092-&gt;9092/tcp                                                   conf_kafka_1</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="solr-collection-setup">3. SolR Collection setup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We will now set up our solr database. First create the 'solr-apache-logs' collection</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker exec -it --user=solr conf_solr_1 bin/solr create_core -c solr-apache-logs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The core/collection should have those fields (corresponding to apache logs parsed fields) : <code>src_ip</code>, <code>identd</code>, <code>user</code>, <code>bytes_out</code>,
+    <code>http_method</code>, <code>http_version</code>, <code>http_query</code>, <code>http_status</code></p>
+</div>
+<div class="paragraph">
+<p>Otherwise for simplicity you can add a dynamic field called '*' and of type string for this collection with the web ui :
+<a href="http://localhost:8983/solr">http://localhost:8983/solr</a></p>
+</div>
+<div class="paragraph">
+<p>Select the solr-apache-logs collection, go to schema and add your fields.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logisland-job-setup">4. Logisland job setup</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that we have a fully functionnal infrastructure, we can go to the stream processing job definition.</p>
+</div>
+<div class="paragraph">
+<p>The beginning of the job remains the same as the <a href="getting-started-guide">Getting Started</a> one :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>an <code>Engine</code> definition</p>
+</li>
+<li>
+<p>a <code>RecordStream</code> to handle the processing pipeline</p>
+</li>
+<li>
+<p>a sequence of <code>Processor</code> to parse the logs</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>What is new here is the</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>controllerService</code> definition to instanciate an SolR Datastore</p>
+</li>
+<li>
+<p>a <code>BulkPut</code> processor to send <code>Records</code> to the DataStore</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>controllerServiceConfigurations</code> part is here to define all services that be shared by processors within the whole job, here an SolR service that will be used later in the <code>BulkAddSolR</code> processor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">engine:
+  component: com.hurence.logisland.engine.spark.KafkaStreamProcessingEngine
+  configuration:
+    spark.app.name: IndexApacheLogsDemo
+    spark.master: local[2]
+  controllerServiceConfigurations:
+
+    - controllerService: datastore_service
+      component: com.hurence.logisland.service.solr.Solr_6_6_2_ClientService
+      configuration:
+        solr.cloud: false
+        solr.connection.string: ${SOLR_CONNECTION}
+        solr.collection: solr-apache-logs
+        solr.concurrent.requests: 4
+        flush.interval: 2000
+        batch.size: 1000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see it uses environment variable so make sure to set them. (if you use the docker-compose file of this tutorial it is already done for you).
+You should notice that <code>solr_service</code> is the unique name given to the ControllerService which can referenced by any Processor config further in the config file.</p>
+</div>
+<div class="paragraph">
+<p>Inside this engine you will run a Kafka stream of processing, so we setup input/output topics and Kafka/Zookeeper hosts.
+Here the stream will read all the logs sent in <code>logisland_raw</code> topic and push the processing output into <code>logisland_events</code> topic.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="yaml" class="language-yaml hljs">- processor: apache_parser
+    component: com.hurence.logisland.processor.SplitText
+        ...
+
+# all the parsed records are added to solr by bulk
+- processor: solr_publisher
+  component: com.hurence.logisland.processor.datastore.BulkPut
+  configuration:
+    datastore.client.service: datastore_service</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>you can now run the job inside the logisland container</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker exec -ti conf_logisland_1 ./bin/logisland.sh --conf ./conf/index-apache-logs-solr.yml</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="inspect-the-logs">5. Inspect the logs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>With Solr, you can directly use the solr web ui.</p>
+</div>
+<div class="paragraph">
+<p>Open up your browser and go to <a href="http://localhost:8983/solr">http://localhost:8983/solr</a> and you should be able to view your apache logs.</p>
+</div>
+<div class="paragraph">
+<p>In non cloud mode, use the core selector, to select the core <code><code>solr-apache-logs</code></code> :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/solr-dashboard.png" alt="solr dashboard">
+</div>
+</div>
+<div class="paragraph">
+<p>Then, go to query and by clicking to Execute Query, you will see some data from your Apache logs :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/guides/images/solr-query.png" alt="solr query">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="stop-the-job">6. Stop the job</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can Ctr+c the console where you launched logisland job.
+Then to kill all containers used run :</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker-compose -f docker-compose-datastore-solr.yml down</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure all container have disappeared.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>sudo docker ps</pre>
+</div>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">Logisland is open. Logisland and its extensions are available under the <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/hurence/logisland.io' target='_blank'>fork the website</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <span>Navigation</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/guides">Guides</a></li>
+          
+            <li><a href="/get-started">Get Started</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Contribute</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://twitter.com/LogislandC">Follow us</a></li>
+          
+            <li><a href="https://github.com/hurence/logisland">GitHub</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Get Help</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://gitter.im/logisland/logisland">Chatroom</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/logisland-dev">Google&nbsp;Groups</a></li>
+          
+            <li><a href="/faq">FAQ</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <span>Logisland is proudly made of</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://kafka.apache.org" target="_blank">Kafka</a></li>
+          
+            <li><a href="https://spark.apache.org" target="_blank">Spark</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a>
+    </span>
+    <span class="redhat">
+      an Hurence sponsored project   
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.hurence.com/" target="_blank"><img src="/assets/images/logo-hurence.png"></a>
+    </span>
+  </div>
+</div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/scroll-down.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

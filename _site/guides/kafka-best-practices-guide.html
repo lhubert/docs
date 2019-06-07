@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Kafka Best Practices Guide</title>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Logisland: Supersonic Subatomic Java">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NJWS5L');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Syntax highlighting -->
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <!-- Begin Jekyll SEO tag v2.6.0 -->
+<title>Kafka Best Practices Guide | Logisland</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Kafka Best Practices Guide" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Logisland: Supersonic Subatomic Java" />
+<meta property="og:description" content="Logisland: Supersonic Subatomic Java" />
+<link rel="canonical" href="http://localhost:4000/guides/kafka-best-practices-guide.html" />
+<meta property="og:url" content="http://localhost:4000/guides/kafka-best-practices-guide.html" />
+<meta property="og:site_name" content="Logisland" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-06-07T14:15:05+02:00" />
+<script type="application/ld+json">
+{"headline":"Kafka Best Practices Guide","dateModified":"2019-06-07T14:15:05+02:00","datePublished":"2019-06-07T14:15:05+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/guides/kafka-best-practices-guide.html"},"url":"http://localhost:4000/guides/kafka-best-practices-guide.html","description":"Logisland: Supersonic Subatomic Java","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+<body class="guides">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="content">
+    <div class="navigation-wrapper">
+  <div class="width-12-12">
+    <div class="header navigation">
+      <div class="logo-wrapper">
+        <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+      </div>
+      <div class="nav-container">
+        <nav>
+          <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+          <ul class="nav-list">
+            <li>
+              <a href="/get-started/" class="">Get Started</a>
+            </li>
+            <li>
+              <a href="/guides/" class="active">Guides</a>
+            </li>
+            <li>
+              <a href="/extensions/" class="">Extensions</a>
+            </li>
+            <li>
+              <a href="/community/" class="">Community</a>
+            </li>
+            <li>
+              <a href="/blog/" class="">Blog</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="guides">
+  <div class="width-12-12">
+    <h1 class="text-caps">Kafka Best Practices Guide</h1>
+    <div class="sect1">
+<h2 id="first-a-quick-rundown-of-kafka-and-its-architecture">1. First, a quick rundown of Kafka and its architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kafka is an efficient distributed messaging system providing built-in data redundancy and resiliency while remaining both high-throughput and scalable. It includes automatic data retention limits, making it well suited for applications that treat data as a stream, and it also supports “compacted” streams that model a map of key-value pairs.</p>
+</div>
+<div class="paragraph">
+<p>To understand these best practices, you’ll need to be familiar with some key terms:</p>
+</div>
+<div class="paragraph">
+<p><strong>Message</strong>: A record or unit of data within Kafka. Each message has a key and a value, and optionally headers.</p>
+</div>
+<div class="paragraph">
+<p><strong>Producer</strong>: Producers publish messages to Kafka topics. Producers decide which topic partition to publish to either randomly (round-robin) or using a partitioning algorithm based on a message’s key.</p>
+</div>
+<div class="paragraph">
+<p><strong>Broker</strong>: Kafka runs in a distributed system or cluster. Each node in the cluster is called a broker.</p>
+</div>
+<div class="paragraph">
+<p><strong>Topic</strong>: A topic is a category to which data records—or messages—are published. Consumers subscribe to topics in order to read the data written to them.</p>
+</div>
+<div class="paragraph">
+<p><strong>Topic partition</strong>: Topics are divided into partitions, and each message is given an offset. Each partition is typically replicated at least once or twice. Each partition has a leader and one or more replicas (copies of the data) that exist on followers, providing protection against a broker failure. All brokers in the cluster are both leaders and followers, but a broker has at most one replica of a topic partition. The leader is used for all reads and writes.</p>
+</div>
+<div class="paragraph">
+<p><strong>Offset</strong>: Each message within a partition is assigned an offset, a monotonically increasing integer that serves as a unique identifier for the message within the partition.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consumer</strong>: Consumers read messages from Kafka topics by subscribing to topic partitions. The consuming application then processes the message to accomplish whatever work is desired.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consumer group</strong>: Consumers can be organized into logic consumer groups. Topic partitions are assigned to balance the assignments among all consumers in the group. Within a consumer group, all consumers work in a load-balanced mode; in other words, each message will be seen by one consumer in the group. If a consumer goes away, the partition is assigned to another consumer in the group. This is referred to as a rebalance. If there are more consumers in a group than partitions, some consumers will be idle. If there are fewer consumers in a group than partitions, some consumers will consume messages from more than one partition.</p>
+</div>
+<div class="paragraph">
+<p><strong>Lag</strong>: A consumer is lagging when it’s unable to read from a partition as fast as messages are produced to it. Lag is expressed as the number of offsets that are behind the head of the partition. The time required to recover from lag (to “catch up”) depends on how quickly the consumer is able to consume messages per second:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>time = messages / (consume rate per second - produce rate per second)</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="best-practices-for-working-with-partitions">2. Best practices for working with partitions</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Understand the data rate of your partitions to ensure you have the correct retention space. The data rate of a partition is the rate at which data is produced to it; in other words, it’s the average message size times the number of messages per second. The data rate dictates how much retention space, in bytes, is needed to guarantee retention for a given amount of time. If you don’t know the data rate, you can’t correctly calculate the retention space needed meet a time-based retention goal. The data rate also specifies the minimum performance a single consumer needs to support without lagging.</p>
+</li>
+<li>
+<p>Unless you have architectural needs that require you to do otherwise, use random partitioning when writing to topics. When you’re operating at scale, uneven data rates among partitions can be difficult to manage. There are three main reasons for this: First, consumers of the “hot” (higher throughput) partitions will have to process more messages than other consumers in the consumer group, potentially leading to processing and networking bottlenecks. Second, topic retention must be sized for the partition with the highest data rate, which can result in increased disk usage across other partitions in the topic. Third, attaining an optimum balance in terms of partition leadership is more complex than simply spreading the leadership across all brokers. A “hot” partition might carry 10 times the weight of another partition in the same topic.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="best-practices-for-working-with-consumers">3. Best practices for working with consumers</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>If your consumers are running versions of Kafka older than 0.10, upgrade them. In version 0.8.x, consumers use Apache ZooKeeper for consumer group coordination, and a number of known bugs can result in long-running rebalances or even failures of the rebalance algorithm. (We refer to these as “rebalance storms”). During a rebalance, one or more partitions are assigned to each consumer in the consumer group. In a rebalance storm, partition ownership is continually shuffled among the consumers, preventing any consumer from making real progress on consumption.</p>
+</li>
+<li>
+<p>Tune your consumer socket buffers for high-speed ingest.
+In Kafka 0.10.x, the parameter is receive.buffer.bytes, which defaults to 64kB. In Kafka 0.8.x, the parameter is socket.receive.buffer.bytes, which defaults to 100kB.
+Both of these default values are too small for high-throughput environments, particularly if the network’s bandwidth-delay product between the broker and the consumer is larger than a local area network (LAN). For high-bandwidth networks (10 Gbps or higher) with latencies of 1 millisecond or more, consider setting the socket buffers to 8 or 16 MB. If memory is scarce, consider 1 MB. You can also use a value of -1, which lets the underlying operating system tune the buffer size based on network conditions. However, the automatic tuning might not occur fast enough for consumers that need to start “hot.”</p>
+</li>
+<li>
+<p>Design high-throughput consumers to implement back-pressure when warranted; it is better to consume only what you can process efficiently than it is to consume so much that your process grinds to a halt and then drops out of the consumer group. Consumers should consume into fixed-sized buffers (see the Disruptor pattern), preferably off-heap if running in a Java virtual machine (JVM). A fixed-size buffer will prevent a consumer from pulling so much data onto the heap that the JVM spends all of its time performing garbage collection instead of the work you want to achieve—which is processing messages.</p>
+</li>
+<li>
+<p>When running consumers on a JVM, be wary of the impact that garbage collection can have on your consumers. For example, long garbage collection pauses can result in dropped ZooKeeper sessions or consumer-group rebalances. The same is true for brokers, which risk dropping out of the cluster if garbage collection pauses are too long.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="best-practices-for-working-with-producers">4. Best practices for working with producers</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Configure your producer to wait for acknowledgments; this is how the producer knows that the message has actually made it to the partition on the broker. In Kafka 0.10.x, the settings is acks; in 0.8.x, it’s request.required.acks. Kafka provides fault-tolerance via replication so the failure of a single node or a change in partition leadership does not affect availability. If you configure your producers without acks (otherwise known as “fire and forget”), messages can be silently lost.</p>
+</li>
+<li>
+<p>Configure retries on your producers. The default value is 3, which is often too low. The right value will depend on your application; for applications where data-loss cannot be tolerated, consider Integer.MAX_VALUE (effectively, infinity). This guards against situations where the broker leading the partition isn’t able to respond to a produce request right away.</p>
+</li>
+<li>
+<p>For high-throughput producers, tune buffer sizes, particularly buffer.memory and batch.size (which is counted in bytes). Because batch.size is a per-partition setting, producer performance and memory usage can be correlated with the number of partitions in the topic. The values here depend on several factors: producer data rate (both the size and number of messages), the number of partitions you are producing to, and the amount of memory you have available. Keep in mind that larger buffers are not always better because if the producer stalls for some reason (say, one leader is slower to respond with acknowledgments), having more data buffered on-heap could result in more garbage collection.</p>
+</li>
+<li>
+<p>Instrument your application to track metrics such as number of produced messages, average produced message size, and number of consumed messages.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="best-practices-for-working-with-brokers">5. Best practices for working with brokers</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Compacted topics require memory and CPU resources on your brokers. Log compaction needs both heap (memory) and CPU cycles on the brokers to complete successfully, and failed log compaction puts brokers at risk from a partition that grows unbounded. You can tune log.cleaner.dedupe.buffer.size and log.cleaner.threads on your brokers, but keep in mind that these values affect heap usage on the brokers. If a broker throws an OutOfMemoryError exception, it will shut down and potentially lose data. The buffer size and thread count will depend on both the number of topic partitions to be cleaned and the data rate and key size of the messages in those partitions. As of Kafka version 0.10.2.1, monitoring the log-cleaner log file for ERROR entries is the surest way to detect issues with log cleaner threads.</p>
+</li>
+<li>
+<p>Monitor your brokers for network throughput—both transmit (TX) and receive (RX)—as well as disk I/O, disk space, and CPU usage. Capacity planning is a key part of maintaining cluster performance.</p>
+</li>
+<li>
+<p>Distribute partition leadership among brokers in the cluster. Leadership requires a lot of network I/O resources. For example, when running with replication factor 3, a leader must receive the partition data, transmit two copies to replicas, plus transmit to however many consumers want to consume that data. So, in this example, being a leader is at least four times as expensive as being a follower in terms of network I/O used. Leaders may also have to read from disk; followers only write.</p>
+</li>
+<li>
+<p>Don’t neglect to monitor your brokers for in-sync replica (ISR) shrinks, under-replicated partitions, and unpreferred leaders. These are signs of potential problems in your cluster. For example, frequent ISR shrinks for a single partition can indicate that the data rate for that partition exceeds the leader’s ability to service the consumer and replica threads.</p>
+</li>
+<li>
+<p>Modify the Apache Log4j properties as needed; Kafka broker logging can use an excessive amount of disk space. However, don’t forgo logging completely—broker logs can be the best, and sometimes only—way to reconstruct the sequence of events after an incident.</p>
+</li>
+<li>
+<p>Either disable automatic topic creation or establish a clear policy regarding the cleanup of unused topics. For example, if no messages are seen for x days, consider the topic defunct and remove it from the cluster. This will avoid the creation of additional metadata within the cluster that you’ll have to manage.</p>
+</li>
+<li>
+<p>For sustained, high-throughput brokers, provision sufficient memory to avoid reading from the disk subsystem. Partition data should be served directly from the operating system’s file system cache whenever possible. However, this means you’ll have to ensure your consumers can keep up; a lagging consumer will force the broker to read from disk.</p>
+</li>
+<li>
+<p>For a large cluster with high-throughput service level objectives (SLOs), consider isolating topics to a subset of brokers. How you determine which topics to isolate will depend on the needs of your business. For example, if you have multiple online transaction processing (OLTP) systems using the same cluster, isolating the topics for each system to distinct subsets of brokers can help to limit the potential blast radius of an incident.</p>
+</li>
+<li>
+<p>Using older clients with newer topic message formats, and vice versa, places extra load on the brokers as they convert the formats on behalf of the client. Avoid this whenever possible.</p>
+</li>
+<li>
+<p>Don’t assume that testing a broker on a local desktop machine is representative of the performance you’ll see in production. Testing over a loopback interface to a partition using replication factor 1 is a very different topology from most production environments. The network latency is negligible via the loopback and the time required to receive leader acknowledgements can vary greatly when there is no replication involved.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configure-kafka-to-avoid-irrecoverable-exceptions">6. Configure Kafka to avoid irrecoverable exceptions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If the message must be reliable published on Kafka cluster, Kafka producer and Kafka cluster needs to be configured with care. It needs to be done independently of chosen streaming framework.
+Kafka producer buffers messages in memory before sending. When our memory buffer is exhausted, Kafka producer must either stop accepting new records (block) or throw errors. By default Kafka producer blocks and this behavior is legitimate for stream processing. The processing should be delayed if Kafka producer memory buffer is full and could not accept new messages. Ensure that block.on.buffer.full Kafka producer configuration property is set.</p>
+</div>
+<div class="paragraph">
+<p>With default configuration, when Kafka broker (leader of the partition) receive the message, store the message in memory and immediately send acknowledgment to Kafka producer. To avoid data loss the message should be replicated to at least one replica (follower). Only when the follower acknowledges the leader, the leader acknowledges the producer.</p>
+</div>
+<div class="paragraph">
+<p>This guarantee you will get with ack=all property in Kafka producer configuration. This guarantees that the record will not be lost as long as at least one in-sync replica remains alive.</p>
+</div>
+<div class="paragraph">
+<p>But this is not enough. The minimum number of replicas in-sync must be defined. You should configure min.insync.replicas property for every topic. I recommend to configure at least 2 in-sync replicas (leader and one follower). If you have datacenter with two zones, I also recommend to keep leader in the first zone and 2 followers in the second zone. This configuration guarantees that every message will be stored in both zones.</p>
+</div>
+<div class="paragraph">
+<p>We are almost done with Kafka cluster configuration. When you set min.insync.replicas=2 property, the topic should be replicated with factor 2 + N. Where N is the number of brokers which could fail, and Kafka producer will still be able to publish messages to the cluster. I recommend to configure replication factor 3 for the topic (or more).</p>
+</div>
+<div class="paragraph">
+<p>With replication factor 3, the number of brokers in the cluster should be at least 3 + M. When one or more brokers are unavailable, you will get underreplicated partitions state of the topics. With more brokers in the cluster than replication factor, you can reassign underreplicated partitions and achieve fully replicated cluster again. I recommend to build the 4 nodes cluster at least for topics with replication factor 3.</p>
+</div>
+<div class="paragraph">
+<p>The last important Kafka cluster configuration property is unclean.leader.election.enable. It should be disabled (by default it is enabled) to avoid unrecoverable exceptions from Kafka consumer. Consider the situation when the latest committed offset is N, but after leader failure, the latest offset on the new leader is M &lt; N. M &lt; N because the new leader was elected from the lagging follower (not in-sync replica). When the streaming engine ask for data from offset N using Kafka consumer, it will get an exception because the offset N does not exist yet. Someone will have to fix offsets manually.</p>
+</div>
+<div class="paragraph">
+<p>So the minimal recommended Kafka setup for reliable message processing is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="shell" class="language-shell hljs">#4 nodes in the cluster
+
+unclean.leader.election.enable=false in the brokers configuration
+replication factor for the topics – 3
+min.insync.replicas=2 property in topic configuration
+ack=all property in the producer configuration
+block.on.buffer.full=true property in the producer configuration</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the above setup your configuration should be resistant to single broker failure, and Kafka consumers will survive new leader election.</p>
+</div>
+<div class="paragraph">
+<p>You could also take look at replica.lag.max.messages and replica.lag.time.max.ms properties for tuning when the follower is removed from ISR by the leader. But this is out of this blog post scope.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img src="/assets/images/logisland-logo.png" class="project-logo" title="Logisland"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">Logisland is open. Logisland and its extensions are available under the <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/hurence/logisland.io' target='_blank'>fork the website</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <span>Navigation</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/guides">Guides</a></li>
+          
+            <li><a href="/get-started">Get Started</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Contribute</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://twitter.com/LogislandC">Follow us</a></li>
+          
+            <li><a href="https://github.com/hurence/logisland">GitHub</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Get Help</span>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://gitter.im/logisland/logisland">Chatroom</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/logisland-dev">Google&nbsp;Groups</a></li>
+          
+            <li><a href="/faq">FAQ</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <span>Logisland is proudly made of</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://kafka.apache.org" target="_blank">Kafka</a></li>
+          
+            <li><a href="https://spark.apache.org" target="_blank">Spark</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a>
+    </span>
+    <span class="redhat">
+      an Hurence sponsored project   
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.hurence.com/" target="_blank"><img src="/assets/images/logo-hurence.png"></a>
+    </span>
+  </div>
+</div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/scroll-down.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>
