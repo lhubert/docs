@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title></title>
+  <title>Frequently Asked Questions</title>
   <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
   <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
   <meta charset="utf-8">
@@ -22,7 +22,7 @@
   <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
-<body class="error-page">
+<body class="vision">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -61,15 +61,87 @@
   </div>
 </div>
 
-    <div class="grid-wrapper error-page-content">
-  <div class="grid__item width-12-12 message">
-    <h1 id="error-404">Error 404</h1>
-
-<h2 id="protons-as-planetsthe-pathway-to-normal-spaceis-found-in-the-nav">Protons as planets,<br />the pathway to normal space<br />is found in the nav.</h2>
-
-<p>A haiku for you.</p>
-
+    <div class="grid-wrapper gs-header">
+  <div class="grid__item width-12-12">
+    <h1 class="text-caps">Frequently Asked Questions</h1>
   </div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">What is your license ?</dt>
+<dd>
+<p>Logisland is an Open Source project licensed under the [Apache License version 2.0](<a href="https://www.apache.org/licenses/LICENSE-2.0" class="bare">https://www.apache.org/licenses/LICENSE-2.0</a>).</p>
+</dd>
+<dt class="hdlist1">Where can I get it ?</dt>
+<dd>
+<p>Logisland is published in Maven Central, check out [which extensions](/extensions) you need and just import them in your <code>pom.xml</code> to get Logisland.
+We recommend you start your Logisland experience via our [Getting Started guides](/get-started).</p>
+</dd>
+<dt class="hdlist1">Logisland is beta ?</dt>
+<dd>
+<p>Yes, we consider Logisland beta.
+However 95% of the features Logisland apps use are running in production</p>
+</dd>
+<dt class="hdlist1">What is a Logisland extension ?</dt>
+<dd>
+<p>One of the main goals of Logisland is ease of extensibility and to build a vibrant ecosystem.
+Think of Logisland extensions as</p>
+</dd>
+<dt class="hdlist1">I already use ELK, why would I need to use Logisland ?</dt>
+<dd>
+<p>Well, at first one could say that that both stacks are overlapping,
+but the real purpose of the Logisland framework is the abstraction of scalability of log aggregation. If you already have an ELK stack you&#8217;ll likely want to make it scale (without pain) in both volume and features ways.
+Logisland will be used for this purpose as an EOM (Event Oriented Middleware) based on Kafka &amp; Spark, where you can plug advanced features
+with ease. So you just have to route your logs from the Logstash (or Flume, or Collectd, &#8230;&#8203;) agents to Kafka topics and launch parsers and processors.</p>
+</dd>
+<dt class="hdlist1">Do I need Hadoop to play with Logisland ?</dt>
+<dd>
+<p>No, if your goal is simply to aggregate a massive amount of logs in an Elasticsearch cluster,
+and to define complex event processing rules to generate new events you definitely don&#8217;t need an Hadoop cluster. Kafka topics can be used as an high throughput log buffer for sliding-windows event processing.
+But if you need advanced batch analytics, it&#8217;s really easy to dump your logs into an hadoop cluster to build machine learning models. Docker container is the easiest way to setup a Logisland job.</p>
+</dd>
+<dt class="hdlist1">How do I make it scale ?</dt>
+<dd>
+<p>Logisland is made for scalability, it relies on Spark and Kafka which are both scalable by essence, to scale Logisland just have to add more kafka brokers and more Spark slaves.
+This is the <strong>manual</strong> way, but we&#8217;ve planned in further releases to provide auto-scaling either Docker Swarn support or Mesos Marathon.</p>
+</dd>
+<dt class="hdlist1">What&#8217;s the difference between Apache NIFI and Logisland ?</dt>
+<dd>
+<p>Apache NIFI is a powerful ETL very well suited to process incoming data such as logs file, process &amp; enrich them and send them out to any datastore.
+You can do that as well with Logisland but Logisland is an event oriented framework designed to process huge amount of events in a Complex Event Processing
+manner not a Single Event Processing as NIFI does. <strong>Logisland</strong> is not an ETL or a DataFlow, the main goal is to extract information from realtime data. Anyway you can use Apache NIFI to process your logs and send them to Kafka in order to be processed by Logisland</p>
+</dd>
+<dt class="hdlist1">Error : realpath not found </dt>
+<dd>
+<p>If you don&#8217;t have the <code>realpath</code> command on you system you may need to install it</p>
+<div class="literalblock">
+<div class="content">
+<pre>brew install coreutils
+sudo apt-get install coreutils</pre>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">How to deploy Logisland in an Hadoop cluster ?</dt>
+<dd>
+<p>When it comes to scale, you&#8217;ll need a cluster. <strong>Logisland</strong> is just a framework that facilitates running sparks jobs over Kafka topics so if you already have a cluster you just have to get the latest Logisland binaries and unzip them to a edge node of your hadoop cluster.</p>
+<div class="literalblock">
+<div class="content">
+<pre>git clone git@github.com:Hurence/{project-name}.git
+cd {project-name}-0.9.5
+mvn clean install -DskipTests</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre># output file is logisland-assembly/target/logisland-*-bin.tar.gz</pre>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">how to handle long running jobs ?</dt>
+<dd>
+<p>Please read this excellent article on <a href="http://mkuthan.github.io/blog/2016/09/30/spark-streaming-on-yarn/">spark long running job setup</a></p>
+</dd>
+</dl>
 </div>
 
   </div>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title></title>
+  <title>Application Testing Guide</title>
   <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
   <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
   <meta charset="utf-8">
@@ -22,7 +22,7 @@
   <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
-<body class="error-page">
+<body class="guides">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -43,7 +43,7 @@
               <a href="/get-started/" class="">Get Started</a>
             </li>
             <li>
-              <a href="/guides/" class="">Guides</a>
+              <a href="/guides/" class="active">Guides</a>
             </li>
             <li>
               <a href="/extensions/" class="">Extensions</a>
@@ -61,14 +61,84 @@
   </div>
 </div>
 
-    <div class="grid-wrapper error-page-content">
-  <div class="grid__item width-12-12 message">
-    <h1 id="error-404">Error 404</h1>
-
-<h2 id="protons-as-planetsthe-pathway-to-normal-spaceis-found-in-the-nav">Protons as planets,<br />the pathway to normal space<br />is found in the nav.</h2>
-
-<p>A haiku for you.</p>
-
+    <div class="guides">
+  <div class="width-12-12">
+    <h1 class="text-caps">Application Testing Guide</h1>
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Learn how to test your Logisland Application.
+This guide covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Testing in JVM mode</p>
+</li>
+<li>
+<p>Testing in native mode</p>
+</li>
+<li>
+<p>Injection of resources into tests</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites">1. Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To complete this guide, you need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>less than 15 minutes</p>
+</li>
+<li>
+<p>an IDE</p>
+</li>
+<li>
+<p>JDK 1.8+ installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Apache Maven 3.5.3+</p>
+</li>
+<li>
+<p>The completed greeter application from the <a href="getting-started-guide.html">Getting Started Guide</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="architecture">2. Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this guide, we expand on the initial test that was created as part of the Getting Started Guide.
+We cover injection into tests and also how to test native executables.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="solution">3. Solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We recommend that you follow the instructions in the next sections and create the application step by step.
+However, you can go right to the completed example.</p>
+</div>
+<div class="paragraph">
+<p>Clone the Git repository: <code>git clone <a href="https://github.com/hurence/logisland-quickstarts.git" class="bare">https://github.com/hurence/logisland-quickstarts.git</a></code>, or download an <a href="https://github.com/hurence/logisland-quickstarts/archive/master.zip">archive</a>.</p>
+</div>
+<div class="paragraph">
+<p>The solution is located in the <code>getting-started-testing</code> directory.</p>
+</div>
+<div class="paragraph">
+<p>This guide assumes you already have the completed application from the <code>getting-started</code> directory.</p>
+</div>
+</div>
+</div>
   </div>
 </div>
 

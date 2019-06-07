@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title></title>
+  <title>Logisland - Extensions</title>
   <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
   <script src="/assets/javascript/highlightjs-pack.js" type="text/javascript"></script>
   <meta charset="utf-8">
@@ -22,7 +22,7 @@
   <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
-<body class="error-page">
+<body class="extensions">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJWS5L"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -46,7 +46,7 @@
               <a href="/guides/" class="">Guides</a>
             </li>
             <li>
-              <a href="/extensions/" class="">Extensions</a>
+              <a href="/extensions/" class="active">Extensions</a>
             </li>
             <li>
               <a href="/community/" class="">Community</a>
@@ -61,14 +61,93 @@
   </div>
 </div>
 
-    <div class="grid-wrapper error-page-content">
-  <div class="grid__item width-12-12 message">
-    <h1 id="error-404">Error 404</h1>
+    <div class="grid-wrapper extensions-page">
+  <div class="grid__item width-12-12">
+    <h1 class="text-caps">Logisland - Extensions</h1>
+  </div>
+  <div class="grid__item width-4-12 width-12-12-m toc">
+    <h2>Categories</h2>
+    <ul>
+    
+      <li><a href="#core">Core</a></li>
+    
+      <li><a href="#datastore">Datastore</a></li>
+    
+    </ul>
+  </div>
+  <div class="grid__item width-8-12 width-12-12-m">
+<div markdown="1">
+<p>
+Think of Logisland extensions as your project dependencies.
+Extensions configure, boot and integrate a framework or technology into your Logisland application.
+They also do all of the heavy lifting of providing the right information to GraalVM for your application to compile natively.
+</p>
+<p>
+Adding an extension is as easy as adding a dependency or use Logisland tooling.
+</p>
+  <div class="listingblock">
+    <div class="content">
+      <pre class="highlight"><code class="bash">$ mvn logisland:list-extensions
+$ mvn logisland:add-extension -Dextensions="groupId:artifactId"
 
-<h2 id="protons-as-planetsthe-pathway-to-normal-spaceis-found-in-the-nav">Protons as planets,<br />the pathway to normal space<br />is found in the nav.</h2>
+# Or
 
-<p>A haiku for you.</p>
-
+$ gradle list-extensions
+# and add the dependency in your dependencies section
+      </code></pre>
+    </div>
+  </div>
+<p>
+Explore the wide breath of technologies Logisland applications can be made with.
+</p>
+</div>
+    
+      <h2 id="core">Core</h2>
+      <ul class="dashed cat-extensions">
+        
+          <li class="ext-row">
+            <h3>Configuration</h3>
+            
+              <p class="description">Included: MicroProfile Configuration via SmallRye</p>
+            
+            
+          </li>
+        
+          <li class="ext-row">
+            <h3>Logging</h3>
+            
+              <p class="description">Included: centralized log management for Logisland</p>
+            
+            
+          </li>
+        
+          <li class="ext-row">
+            <h3>ArC</h3>
+            
+              <p class="description">Build time CDI dependency injection</p>
+            
+            
+              <p class="text-cyan" title="Maven coordinates">io.logisland:logisland-arc</p>
+            
+          </li>
+        
+      </ul>
+    
+      <h2 id="datastore">Datastore</h2>
+      <ul class="dashed cat-extensions">
+        
+          <li class="ext-row">
+            <h3>SolR</h3>
+            
+              <p class="description">Netty is a non-blocking I/O client-server framework. Used by Logisland as foundation layer.</p>
+            
+            
+              <p class="text-cyan" title="Maven coordinates">io.logisland:logisland-solr</p>
+            
+          </li>
+        
+      </ul>
+    
   </div>
 </div>
 
