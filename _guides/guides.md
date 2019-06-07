@@ -25,8 +25,6 @@ permalink: /guides/
 ### Writing Extensions
 
 - [Logisland Java API]({{site.baseurl}}/guides/logisland-api-guide)
-- [Writing Your Own Extension]({{site.baseurl}}/guides/extension-authors-guide)
-- [Adding Extensions]({{site.baseurl}}/guides/components-guide)
 
 
 ### Time Series
@@ -47,35 +45,13 @@ permalink: /guides/
 - [Using MongoDB]({{site.baseurl}}/guides/datastore-mongo-guide)
 
 
-### Security
-
-- [Using Security]({{site.baseurl}}/guides/security-guide)
-- [Handling pcap data]({{site.baseurl}}/guides/pcap-guide)
-- [Handling netflow data]({{site.baseurl}}/guides/netflow-guide)
-- [Encrypt data]({{site.baseurl}}/guides/encryption-guide)
-
-### Deploying
-
-- [Deploying Applications on Kubernetes or OpenShift]({{site.baseurl}}/guides/kubernetes-guide)
-- [Deploying Applications on Hadoop cluster]({{site.baseurl}}/guides/hadoop-guide)
-- [Deploying Applications on Mesos]({{site.baseurl}}/guides/mesos-guide)
-
-### Observability
-
-- [Using Health Check]({{site.baseurl}}/guides/health-guide)
-- [Using OpenTracing]({{site.baseurl}}/guides/opentracing-guide)
-- [Collecting Metrics]({{site.baseurl}}/guides/metrics-guide)
-
-### Serialization
-
-- [Using Json serializer]({{site.baseurl}}/guides/serialize-json-guide)
-- [Using Avro serializer]({{site.baseurl}}/guides/serialize-avro-guide)
-
 
 
 
 
 </div>
+
+<!--
 <div class="grid__item width-8-12 width-12-12-m guides-content">
 <div markdown="1">
 You have gone through the [Getting Started]({{site.baseurl}}/get-started) guides.
@@ -132,3 +108,4 @@ Using Logisland with Google analytics gives your data back.
 <div class="grid__item width-8-12 width-12-12-m guides-content">
 </div>
 
+-->
