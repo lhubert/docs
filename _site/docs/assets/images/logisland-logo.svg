@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="508.5 355.4192 302.5874 82.16162" width="302.5874" height="82.16162">
+  <defs>
+    <font-face font-family="Futura" font-size="39" panose-1="2 11 6 2 2 2 4 2 3 3" units-per-em="1000" underline-position="-97.65625" underline-thickness="78.125" slope="0" x-height="482.4219" cap-height="761.2305" ascent="1038.5742" descent="-259.76562" font-weight="500">
+      <font-face-src>
+        <font-face-name name="Futura-Medium"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.10.2 
+    <dc:date>2019-06-04 15:01:04 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_1" stroke="none" stroke-opacity="1" fill="none" fill-opacity="1" stroke-dasharray="none">
+    <title>Canvas 1</title>
+    <g id="Canvas_1: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_12">
+        <ellipse cx="543.5614" cy="389.9317" rx="16.2353200600541" ry="15.5000247674794" fill="#e47c40"/>
+        <ellipse cx="543.5614" cy="389.9317" rx="16.2353200600541" ry="15.5000247674794" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      </g>
+      <g id="Graphic_11">
+        <ellipse cx="536.2353" cy="396.5" rx="16.2353200600541" ry="15.5000247674794" fill="#f0ca4d"/>
+        <ellipse cx="536.2353" cy="396.5" rx="16.2353200600541" ry="15.5000247674794" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      </g>
+      <g id="Graphic_4">
+        <ellipse cx="537.6825" cy="405.01553" rx="16.2353200600541" ry="15.5000247674794" fill="#e47c40"/>
+        <ellipse cx="537.6825" cy="405.01553" rx="16.2353200600541" ry="15.5000247674794" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      </g>
+      <g id="Graphic_5">
+        <ellipse cx="546.92474" cy="408.74224" rx="16.2353200600541" ry="15.5000247674794" fill="#f0ca4d"/>
+        <ellipse cx="546.92474" cy="408.74224" rx="16.2353200600541" ry="15.5000247674794" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      </g>
+      <g id="Graphic_6">
+        <text transform="translate(569 370.4192)" fill="aqua">
+          <tspan font-family="Futura" font-size="39" font-weight="500" fill="aqua" x="0" y="41">LOGISLAND</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
