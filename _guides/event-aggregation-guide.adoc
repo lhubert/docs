@@ -68,7 +68,8 @@ The logisland job for this tutorial is already packaged in the tar.gz assembly a
 Our application will add a new stream to the previous one : the sql stream is a special one one use a link:../extensions/kafkarecordstreamsqlaggregator.html[KafkaRecordStreamSQLAggregator].
 This stream defines input/output topics names as well as Serializers, avro schema.
 
-TIP: The http://avro.apache.org/docs/1.7.7/spec.html[Avro schema] is set for the input topic and must be same as the avro schema of the output topic for the stream that
+[TIP] 
+The http://avro.apache.org/docs/1.7.7/spec.html[Avro schema] is set for the input topic and must be same as the avro schema of the output topic for the stream that
 produces the records (please refer to link:getting-started-guide[Getting Started Guide])
 
 

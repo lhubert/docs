@@ -244,12 +244,5 @@ You should see the apache log events such as :
 
 This guide covered the creation of an application using Logisland.
 However, there is much more.
-We recommend continuing the journey with the link:building-native-image-guide.html[building a native executable guide], where you learn about the native executable creation and the packaging in a container.
-
-In addition, the link:tooling.html[tooling guide] document explains how to:
-
-* scaffold a project in a single command line
-* enable the _development mode_ (hot reload)
-* import the project in your favorite IDE
-* and more
+We recommend continuing the journey with the link:event-aggregation-guide[event aggregation guide], where you learn about how to aggregate some metrics from your data.
 
