@@ -64,8 +64,53 @@
     <div class="guides">
   <div class="width-12-12">
     <h1 class="text-caps">Logisland Expression Language</h1>
-    <div class="sect1">
-<h2 id="overview">1. Overview</h2>
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Learn how to use Expression Language in Logisland configurations
+This guide covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>MVEL syntax</p>
+</li>
+<li>
+<p>using EL in a Processor</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites">1. Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To complete this guide, you need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>less than 15 minutes</p>
+</li>
+<li>
+<p>an IDE</p>
+</li>
+<li>
+<p>JDK 1.8+ installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Apache Maven 3.5.3+</p>
+</li>
+<li>
+<p>The completed greeter application from the <a href="getting-started-guide">Getting Started Guide</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="overview">2. Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>All data in Logisland is represented by an abstraction called a <code>Record</code>. Those records contains fields of different types.</p>
@@ -77,7 +122,7 @@ Some of them support the expression language (EL). In this section we will talk 
 </div>
 </div>
 <div class="sect1">
-<h2 id="structure-of-a-logisland-expression">2. Structure of a Logisland Expression</h2>
+<h2 id="structure-of-a-logisland-expression">3. Structure of a Logisland Expression</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The Logisland expression Language always begins with the start delimiter <code>${</code> and ends
@@ -132,7 +177,7 @@ Feel free to make a Pull request as well to implement this new feature.
 </div>
 </div>
 <div class="sect1">
-<h2 id="adding-a-field-which-is-concatenation-of-two-others-using-_-as-joining-string">3. Adding a field which is concatenation of two others using '_' as joining string</h2>
+<h2 id="adding-a-field-which-is-concatenation-of-two-others-using-_-as-joining-string">4. Adding a field which is concatenation of two others using '_' as joining string</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>set those dynamic properties in <code>AddFields</code> processor :</p>
@@ -171,7 +216,7 @@ my_employees_by_countries.type: map</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="conclusion">4. Conclusion</h2>
+<h2 id="conclusion">5. Conclusion</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>As you can see the language expression is very flexible but it&#8217;s usage is very dependent of the implementation of the component&#8217;s developer.</p>

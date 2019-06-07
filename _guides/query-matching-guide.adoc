@@ -18,7 +18,7 @@ include::./attributes.adoc[]
 :sectnumlevels: 4
 
 
-Learn how to test your Logisland Application.
+Learn how to percolate lucen Queries to generate custom events based on business policies
 This guide covers:
 
 * lucene syntax

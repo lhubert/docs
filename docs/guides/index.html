@@ -78,6 +78,16 @@
     <li><a href="/docs/guides/threshold-alerting-guide">Threshold Alerting</a></li>
   </ul>
 
+  <h3 id="data-stores">Data Stores</h3>
+
+  <ul>
+    <li><a href="/docs/guides/datastore-connectors-guide">Using Connectors</a></li>
+    <li><a href="/docs/guides/datastore-elasticsearch-guide">Using Elasticsearch</a></li>
+    <li><a href="/docs/guides/datastore-solr-guide">Using SolR</a></li>
+    <li><a href="/docs/guides/datastore-redis-guide">Using Redis</a></li>
+    <li><a href="/docs/guides/datastore-mongo-guide">Using MongoDB</a></li>
+  </ul>
+
   <h3 id="operation">Operation</h3>
 
   <ul>
@@ -103,76 +113,105 @@
     <li><a href="/docs/guides/web-sessionization-guide">User sessions</a></li>
   </ul>
 
-  <h3 id="data-stores">Data Stores</h3>
-
-  <ul>
-    <li><a href="/docs/guides/datastore-connectors-guide">Using Connectors</a></li>
-    <li><a href="/docs/guides/datastore-elasticsearch-guide">Using Elasticsearch</a></li>
-    <li><a href="/docs/guides/datastore-solr-guide">Using SolR</a></li>
-    <li><a href="/docs/guides/datastore-redis-guide">Using Redis</a></li>
-    <li><a href="/docs/guides/datastore-mongo-guide">Using MongoDB</a></li>
-  </ul>
-
-</div>
-
-<!--
-<div class="grid__item width-8-12 width-12-12-m guides-content">
-<div markdown="1">
-You have gone through the [Getting Started](/docs/get-started) guides.
-You are now ready to dive into specific topic guides.
-</div>
-<div class="guide-item" markdown="1">
-## Configuring Your Application ..
-
-Hardcoded values in your code is a no go (even if we all did it at some point ;-)). In this guide, we learn how to configure your application.
-
-<a href="/docs/guides/application-configuration-guide" class="button-cta secondary">READ THE GUIDE</a>
-</div>
-
-
-<div class="guide-item" markdown="1">
-## Testing Your Application
-
-This guide covers:
-
-* Unit Testing
-* Integration Testing
-
-<a href="/docs/guides/application-testing-guide" class="button-cta secondary">READ THE GUIDE</a>
-</div>
-<div class="guide-item" markdown="1">
-## Configuring Logging
-
-This guide explains logging and how to configure it.
-
-<a href="/docs/guides/logging-guide" class="button-cta secondary">READ THE GUIDE</a>
-</div>
-
-</div>
-
-
-<div class="grid__item width-12-12"><hr></div>
-<div class="grid__item width-4-12 width-12-12-m toc" markdown="1">
-## Web analytics
 </div>
 <div class="grid__item width-8-12 width-12-12-m guides-content">
-<div class="guide-item" markdown="1">
-## User sessions
+<div>
+    <p>You have gone through the <a href="/docs/get-started">Getting Started</a> guides.
+You are now ready to dive into specific topic guides.</p>
+  </div>
 
-Using Logisland with Google analytics gives your data back.
+<div class="guide-item">
+    <h2 id="event-aggregation">Event Aggregation</h2>
+    <p>Learn how to aggregate metrics over time window events</p>
 
-<a href="/docs/guides/rest-json-guide" class="button-cta secondary">READ THE GUIDE</a>
+    <p>This guide covers:</p>
+
+    <ul>
+      <li>avro schema validation</li>
+      <li>event aggregation stream</li>
+    </ul>
+
+    <p><a href="/docs/guides/event-aggregation-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
+<div class="guide-item">
+    <h2 id="query-matching">Query Matching</h2>
+    <p>Learn how to percolate lucen Queries to generate custom events based on business policies</p>
+
+    <p>This guide covers:</p>
+
+    <ul>
+      <li>lucene syntax</li>
+      <li>matching queries</li>
+    </ul>
+
+    <p><a href="/docs/guides/query-matching-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
+<div class="guide-item">
+    <h2 id="using-expression-language">Using Expression language</h2>
+    <p>Learn how to use Expression Language in Logisland configurations</p>
+
+    <p>This guide covers:</p>
+
+    <ul>
+      <li>MVEL syntax</li>
+      <li>using EL in a Processor</li>
+    </ul>
+
+    <p><a href="/docs/guides/el-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
+
+<div class="guide-item">
+    <h2 id="using-cache--enrichers">Using Cache &amp; Enrichers</h2>
+    <p>Learn how to add meta information from external source and using a cache</p>
+
+    <p>This guide covers:</p>
+
+    <ul>
+      <li>LRU cache definition</li>
+      <li>User Agent parsing</li>
+      <li>FQDN meta data retrieval</li>
+    </ul>
+
+    <p><a href="/docs/guides/enrichment-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
+
+<div class="guide-item">
+    <h2 id="threshold-alerting">Threshold Alerting</h2>
+    <p>Learn how to launch alerts based on thresholds policies</p>
+
+    <p>This guide covers:</p>
+
+    <ul>
+      <li>using a Redis K/V to store some aggregations</li>
+      <li>define alerting business rules as MVEL functions</li>
+    </ul>
+
+    <p><a href="/docs/guides/threshold-alerting-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
+
 </div>
+
+<div class="grid__item width-12-12"><hr /></div>
+<div class="grid__item width-4-12 width-12-12-m toc">
+  <h2 id="web-analytics-1">Web analytics</h2>
+</div>
+<div class="grid__item width-8-12 width-12-12-m guides-content">
+<div class="guide-item">
+    <h2 id="user-sessions">User sessions</h2>
+
+    <p>Using Logisland with Google analytics gives your data back.</p>
+
+    <p><a href="/docs/guides/rest-json-guide" class="button-cta secondary">READ THE GUIDE</a></p>
+  </div>
 </div>
 
-<div class="grid__item width-12-12"><hr></div>
-<div class="grid__item width-4-12 width-12-12-m toc" markdown="1">
-## Smart Alerting
+<div class="grid__item width-12-12"><hr /></div>
+<div class="grid__item width-4-12 width-12-12-m toc">
+  <h2 id="smart-alerting">Smart Alerting</h2>
 </div>
 <div class="grid__item width-8-12 width-12-12-m guides-content">
 </div>
 
--->
 
 </div>
 

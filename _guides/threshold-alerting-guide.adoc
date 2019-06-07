@@ -22,7 +22,7 @@ Learn how to launch alerts based on thresholds policies
 This guide covers:
 
 * using a Redis K/V to store some aggregations
-* 
+* define alerting business rules as MVEL functions
 
 == Prerequisites
 

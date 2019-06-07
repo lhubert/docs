@@ -24,7 +24,7 @@ include::./attributes.adoc[]
 :sectnumlevels: 4
 
 
-Learn how to test your Logisland Application.
+Learn how to aggregate metrics over time window events
 This guide covers:
 
 * avro schema validation

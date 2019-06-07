@@ -11,6 +11,21 @@ include::./attributes.adoc[]
 :sectnums:
 :sectnumlevels: 4
 
+Learn how to use Expression Language in {project-name} configurations
+This guide covers:
+
+* MVEL syntax
+* using EL in a Processor
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* less than 15 minutes
+* an IDE
+* JDK 1.8+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven 3.5.3+
+* The completed greeter application from the link:getting-started-guide[Getting Started Guide]
 
 
 == Overview
